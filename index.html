@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f3ed">
   <meta name="description" content="Live Singapore haze readings, local air-quality guidance and haze-ready photo masks.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Haze How Liao?">
+  <meta property="og:title" content="Haze How Liao? — Singapore Haze Check">
+  <meta property="og:description" content="Check live Singapore PM2.5 and PSI readings, regional air quality and haze guidance before heading out.">
+  <meta property="og:url" content="https://jeremytantat.github.io/SingaporeHazeCondition/">
+  <meta property="og:image" content="https://jeremytantat.github.io/SingaporeHazeCondition/social-preview.png">
+  <meta property="og:image:secure_url" content="https://jeremytantat.github.io/SingaporeHazeCondition/social-preview.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Haze How Liao? — a Singapore haze and air-quality check">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Haze How Liao? — Singapore Haze Check">
+  <meta name="twitter:description" content="Check live Singapore PM2.5 and PSI readings, regional air quality and haze guidance before heading out.">
+  <meta name="twitter:image" content="https://jeremytantat.github.io/SingaporeHazeCondition/social-preview.png">
   <title>Haze How Liao?</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='20' fill='%23294d3a'/%3E%3Ctext x='13' y='45' font-family='Arial,sans-serif' font-size='40' font-weight='700' fill='%23f6f1de'%3Eh.%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://api-open.data.gov.sg">
@@ -84,16 +99,6 @@
       </div>
       <div id="data-error" class="notice error-notice" role="status" hidden></div>
 
-      <div class="regions-heading">
-        <div>
-          <h3 data-i18n="byRegion">By region</h3>
-          <p data-i18n="regionNote">Readings can vary across the island.</p>
-        </div>
-        <span class="unit-note">PM2.5 µg/m³ <i>·</i> PSI</span>
-      </div>
-      <div class="region-grid" id="region-grid" aria-live="polite">
-        <div class="region-skeleton">Checking the air…</div>
-      </div>
       <p class="data-note" data-i18n="dataNote">Readings are from Singapore’s open government real-time API. 1-hour PM2.5 and 24-hour PSI are different measures; use PSI for general health guidance.</p>
     </section>
 
@@ -131,7 +136,7 @@
               <input id="place-input" name="place" type="search" placeholder="e.g. Gardens by the Bay" data-i18n-placeholder="placePlaceholder" autocomplete="off" required maxlength="120">
               <button type="submit" id="place-submit"><span data-i18n="checkPlace">Check place</span><span aria-hidden="true">↗</span></button>
             </div>
-            <p class="form-hint" data-i18n="placeHint">Singapore locations only · checked against OneMap</p>
+            <p class="form-hint" data-i18n="placeHint">Singapore locations only · verified by OneMap; nearby photos may be from Wikimedia Commons</p>
             <p class="form-message" id="place-message" role="status" aria-live="polite"></p>
           </form>
         </div>

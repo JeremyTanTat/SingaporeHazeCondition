@@ -1,5 +1,6 @@
 const DATA_BASE = 'https://api-open.data.gov.sg/v2/real-time/api';
 const ONEMAP_SEARCH = 'https://www.onemap.gov.sg/api/common/elastic/search';
+const COMMONS_API = 'https://commons.wikimedia.org/w/api.php';
 const REGIONS = ['north', 'south', 'east', 'west', 'central'];
 const REGION_CENTRES = {
   north: { latitude: 1.41803, longitude: 103.82 },
@@ -30,8 +31,6 @@ const COPY = {
     pmReadingLabel: 'PM2.5',
     psiReadingLabel: 'Pollutant Standards Index',
     highestReading: 'Highest reading',
-    byRegion: 'By region',
-    regionNote: 'Readings can vary across the island.',
     dataNote: 'Readings are from Singapore’s open government real-time API. 1-hour PM2.5 and 24-hour PSI are different measures; use PSI for general health guidance.',
     mapEyebrow: 'FIVE REPORTING REGIONS',
     mapTitle: 'Singapore, by region',
@@ -41,8 +40,6 @@ const COPY = {
     mapLoading: 'Loading regional readings…',
     mapPm: 'PM2.5 · 1h',
     mapPsi: 'PSI · 24h',
-    pmShort: 'PM2.5 · 1 hr',
-    psiShort: 'PSI · 24 hr',
     placeEyebrow: 'YOUR NEXT STOP',
     placeTitle: 'Going somewhere?',
     placeDescription: 'Look up a Singapore place, address or postal code. We’ll match it to the nearest reporting region and give you a quick outdoor-activity check.',
@@ -50,7 +47,16 @@ const COPY = {
     placePlaceholder: 'e.g. Gardens by the Bay',
     checkPlace: 'Check place',
     searching: 'Checking…',
-    placeHint: 'Singapore locations only · checked against OneMap',
+    placeHint: 'Singapore only · OneMap verified; nearby photo lookup uses approximate location (Wikimedia Commons)',
+    destinationPhotoSearching: 'Looking for a nearby photo…',
+    destinationPhotoNone: 'No relevant nearby photo was found.',
+    destinationPhotoError: 'Nearby photo search is unavailable; the haze check is still ready.',
+    destinationPhotoAlt: 'A nearby photo for {place}',
+    destinationPhotoSource: 'View photo and license ↗',
+    destinationPhotoCredit: '{artist} · {license}',
+    destinationPhotoUnknownArtist: 'Photographer not listed',
+    destinationPhotoUnknownLicense: 'License details on source page',
+    destinationPhotoNearby: 'Nearby image; it may not depict the exact address.',
     placePlaceholderTitle: 'Your local haze check will show up here.',
     placePlaceholderHint: 'Pick a place to get started',
     familyEyebrow: 'THE HAZE HOW LIAO FAMILY',
@@ -148,8 +154,6 @@ const COPY = {
     pmReadingLabel: 'PM2.5 细颗粒物',
     psiReadingLabel: '污染标准指数',
     highestReading: '最高读数',
-    byRegion: '各区域读数',
-    regionNote: '岛上不同地区的读数可能有所不同。',
     dataNote: '数据来自新加坡政府实时开放数据 API。1 小时 PM2.5 与 24 小时 PSI 是不同指标；一般健康建议请参考 PSI。',
     mapEyebrow: '五个监测区域',
     mapTitle: '新加坡区域空气状况',
@@ -159,8 +163,6 @@ const COPY = {
     mapLoading: '正在读取各区域数据…',
     mapPm: 'PM2.5 · 1h',
     mapPsi: 'PSI · 24h',
-    pmShort: 'PM2.5 · 1 小时',
-    psiShort: 'PSI · 24 小时',
     placeEyebrow: '下一站',
     placeTitle: '准备去哪里？',
     placeDescription: '搜索新加坡地点、地址或邮政编码。我们会匹配最近的监测区域，并提供简短的户外活动建议。',
@@ -168,7 +170,16 @@ const COPY = {
     placePlaceholder: '例如：滨海湾花园',
     checkPlace: '查询地点',
     searching: '查询中…',
-    placeHint: '仅限新加坡地点 · 通过 OneMap 验证',
+    placeHint: '仅限新加坡地点 · 由 OneMap 验证；Wikimedia Commons 附近照片搜索会使用大致位置',
+    destinationPhotoSearching: '正在查找附近照片…',
+    destinationPhotoNone: '没有找到相关的附近照片。',
+    destinationPhotoError: '暂时无法搜索附近照片；空气状况查询仍可使用。',
+    destinationPhotoAlt: '靠近{place}的照片',
+    destinationPhotoSource: '查看照片与许可 ↗',
+    destinationPhotoCredit: '{artist} · {license}',
+    destinationPhotoUnknownArtist: '未注明摄影者',
+    destinationPhotoUnknownLicense: '许可信息请见来源页面',
+    destinationPhotoNearby: '这是附近的照片，不一定是该确切地址的实景。',
     placePlaceholderTitle: '这里会显示当地雾霾情况。',
     placePlaceholderHint: '输入地点开始查询',
     familyEyebrow: 'Haze How Liao 一家',
@@ -284,6 +295,9 @@ const FACE_LANDMARKS = {
 let currentLanguage = 'en';
 let currentReadings = null;
 let selectedPlace = null;
+let selectedPlacePhoto = null;
+let selectedPlacePhotoStatus = 'none';
+let placePhotoRequest = 0;
 let dataErrorKey = null;
 
 function t(key, replacements = {}) {
@@ -419,16 +433,6 @@ function renderDashboard() {
   document.getElementById('psi-location').textContent = regionName(highestPsi.name);
   setStatus('pm-status', pmCondition(highestPm.pm), highestPm.pm, 300, 'pm-scale');
   setStatus('psi-status', psiCondition(highestPsi.psi), highestPsi.psi, 300, 'psi-scale');
-  document.getElementById('region-grid').innerHTML = regions.map((region) => `
-    <article class="region-card">
-      <h4>${regionName(region.name)}</h4>
-      <div class="region-values">
-        <div class="region-value"><span>${t('pmShort')}</span><strong>${region.pm}</strong></div>
-        <div class="region-value"><span>${t('psiShort')}</span><strong>${region.psi}</strong></div>
-      </div>
-      <p class="region-status">${t(psiCondition(region.psi).key)}</p>
-    </article>
-  `).join('');
   renderMapRegions(regions);
 
   if (timestamp) {
@@ -500,10 +504,28 @@ function renderPlaceResult(result) {
   const advice = healthAdvice(region);
   const name = result.SEARCHVAL || result.ADDRESS || 'Selected location';
   const address = result.ADDRESS && result.ADDRESS !== name ? result.ADDRESS : '';
+  const photoMarkup = selectedPlacePhoto
+    ? `
+      <figure class="destination-photo">
+        <a class="destination-photo-image-link" href="${escapeHtml(selectedPlacePhoto.pageUrl)}" target="_blank" rel="noreferrer">
+          <img id="destination-photo-image" src="${escapeHtml(selectedPlacePhoto.imageUrl)}" alt="${escapeHtml(t('destinationPhotoAlt', { place: name }))}" loading="lazy" referrerpolicy="no-referrer">
+        </a>
+        <figcaption>
+          <span class="destination-photo-credit">${t('destinationPhotoCredit', {
+            artist: escapeHtml(selectedPlacePhoto.artist || t('destinationPhotoUnknownArtist')),
+            license: escapeHtml(selectedPlacePhoto.license || t('destinationPhotoUnknownLicense'))
+          })}</span>
+          <a class="destination-photo-source" href="${escapeHtml(selectedPlacePhoto.pageUrl)}" target="_blank" rel="noreferrer">${t('destinationPhotoSource')}</a>
+          <span class="destination-photo-note">${t('destinationPhotoNearby')}</span>
+        </figcaption>
+      </figure>
+    `
+    : `<p class="destination-photo-status" role="status">${t(`destinationPhoto${selectedPlacePhotoStatus.charAt(0).toUpperCase()}${selectedPlacePhotoStatus.slice(1)}`)}</p>`;
   document.getElementById('place-result').innerHTML = `
     <article class="result-card">
       <div class="result-location-top"><span class="result-region">${regionName(region.name)} ${t('regionSuffix')}</span><span class="result-number">${address ? escapeHtml(address) : 'Singapore'}</span></div>
       <h3 class="result-place-name">${escapeHtml(name)}</h3>
+      ${photoMarkup}
       <div class="result-numbers">
         <span class="result-number">${t('pmValueLabel')}<strong>${region.pm} µg/m³</strong></span>
         <span class="result-number">${t('psiValueLabel')}<strong>${region.psi}</strong></span>
@@ -511,6 +533,17 @@ function renderPlaceResult(result) {
       <p class="recommendation ${advice.tone}">${t(advice.key)}</p>
     </article>
   `;
+  const photoImage = document.getElementById('destination-photo-image');
+  if (photoImage) {
+    const renderedPhoto = selectedPlacePhoto;
+    photoImage.addEventListener('error', () => {
+      if (selectedPlace === result && selectedPlacePhoto === renderedPhoto) {
+        selectedPlacePhoto = null;
+        selectedPlacePhotoStatus = 'error';
+        renderPlaceResult(result);
+      }
+    }, { once: true });
+  }
 }
 
 function renderVisitorCount(increment) {
@@ -537,7 +570,7 @@ function updateShareLink() {
   document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodeURIComponent(message)}`;
 }
 
-function showPlaceResult(result) {
+function showPlaceResult(result, searchTerm) {
   if (!currentReadings) throw new Error(t('placeWait'));
   const latitude = Number(result.LATITUDE);
   const longitude = Number(result.LONGITUDE);
@@ -546,13 +579,117 @@ function showPlaceResult(result) {
     throw new Error(t('placeOutside'));
   }
   selectedPlace = result;
+  selectedPlacePhoto = null;
+  selectedPlacePhotoStatus = 'searching';
+  const requestId = ++placePhotoRequest;
   renderPlaceResult(result);
+  findDestinationPhoto(result, searchTerm).then((photo) => {
+    if (requestId !== placePhotoRequest || selectedPlace !== result) return;
+    selectedPlacePhoto = photo;
+    selectedPlacePhotoStatus = photo ? 'found' : 'none';
+    renderPlaceResult(result);
+  }).catch((error) => {
+    if (requestId !== placePhotoRequest || selectedPlace !== result) return;
+    console.error('Nearby destination photo lookup failed.', error);
+    selectedPlacePhoto = null;
+    selectedPlacePhotoStatus = 'error';
+    renderPlaceResult(result);
+  });
 }
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[character]);
+}
+
+function cleanCommonsMetadata(value) {
+  if (!value) return '';
+  const parsed = new DOMParser().parseFromString(String(value), 'text/html');
+  return (parsed.body.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function validatedCommonsUrl(value, allowedHosts) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && allowedHosts.includes(url.hostname) ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
+function searchPlacePhotoTerms(value) {
+  const ignoredTerms = new Set(['singapore', 'road', 'street', 'avenue', 'drive', 'lane', 'the', 'by', 'at', 'near', 'block', 'blk']);
+  return [...new Set((String(value).toLowerCase().match(/[a-z0-9]+/g) || [])
+    .filter((term) => term.length > 2 && !/^\d+$/.test(term) && !ignoredTerms.has(term)))];
+}
+
+function distanceInMetres(latitudeA, longitudeA, latitudeB, longitudeB) {
+  const radians = Math.PI / 180;
+  const latitudeDifference = (latitudeB - latitudeA) * radians;
+  const longitudeDifference = (longitudeB - longitudeA) * radians;
+  const arc = Math.sin(latitudeDifference / 2) ** 2 +
+    Math.cos(latitudeA * radians) * Math.cos(latitudeB * radians) *
+    Math.sin(longitudeDifference / 2) ** 2;
+  return 6371000 * 2 * Math.atan2(Math.sqrt(arc), Math.sqrt(Math.max(0, 1 - arc)));
+}
+
+async function findDestinationPhoto(result, searchTerm) {
+  const url = new URL(COMMONS_API);
+  url.search = new URLSearchParams({
+    action: 'query',
+    generator: 'geosearch',
+    ggscoord: `${result.LATITUDE}|${result.LONGITUDE}`,
+    ggsradius: '1500',
+    ggsnamespace: '6',
+    ggslimit: '25',
+    prop: 'coordinates|imageinfo',
+    iiprop: 'url|mime|extmetadata',
+    iiextmetadatafilter: 'Artist|LicenseShortName',
+    iiurlwidth: '800',
+    format: 'json',
+    origin: '*'
+  });
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Wikimedia Commons returned HTTP ${response.status}.`);
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.info || 'Wikimedia Commons returned an error.');
+  const pages = data.query && data.query.pages ? Object.values(data.query.pages) : [];
+  const searchTerms = searchPlacePhotoTerms(`${searchTerm} ${result.SEARCHVAL || ''}`);
+  const imageHosts = ['thumb.wikimedia.org', 'upload.wikimedia.org'];
+  const candidates = pages.map((page) => {
+    const coordinates = Array.isArray(page.coordinates) ? page.coordinates[0] : page.coordinates;
+    const imageInfo = page.imageinfo && page.imageinfo[0];
+    if (!imageInfo || !/^image\/(jpeg|png|webp)$/i.test(imageInfo.mime || '')) return null;
+    const hasCoordinates = coordinates && Number.isFinite(Number(coordinates.lat)) && Number.isFinite(Number(coordinates.lon));
+    const distance = hasCoordinates
+      ? distanceInMetres(
+        Number(result.LATITUDE),
+        Number(result.LONGITUDE),
+        Number(coordinates.lat),
+        Number(coordinates.lon)
+      )
+      : Infinity;
+    if (hasCoordinates && (!Number.isFinite(distance) || distance > 1500)) return null;
+    const titleTerms = new Set((String(page.title || '').toLowerCase().match(/[a-z0-9]+/g) || []));
+    const matchCount = searchTerms.filter((term) => titleTerms.has(term)).length;
+    if (matchCount === 0 && (!hasCoordinates || distance > 250)) return null;
+
+    const imageUrl = validatedCommonsUrl(imageInfo.thumburl || imageInfo.url, imageHosts);
+    const pageUrl = validatedCommonsUrl(imageInfo.descriptionurl, ['commons.wikimedia.org']);
+    if (!imageUrl || !pageUrl) return null;
+    const metadata = imageInfo.extmetadata || {};
+    return {
+      imageUrl,
+      pageUrl,
+      artist: cleanCommonsMetadata(metadata.Artist && metadata.Artist.value),
+      license: cleanCommonsMetadata(metadata.LicenseShortName && metadata.LicenseShortName.value),
+      distance,
+      matchCount
+    };
+  }).filter(Boolean);
+  candidates.sort((first, second) => second.matchCount - first.matchCount || first.distance - second.distance);
+  return candidates[0] || null;
 }
 
 document.querySelectorAll('[data-language]').forEach((button) => {
@@ -590,7 +727,7 @@ document.getElementById('place-form').addEventListener('submit', async (event) =
         lat >= 1.15 && lat <= 1.48 && lon >= 103.58 && lon <= 104.1;
     });
     if (singaporeResults.length === 0) throw new Error(t('placeNotFound'));
-    showPlaceResult(singaporeResults[0]);
+    showPlaceResult(singaporeResults[0], searchValue);
   } catch (error) {
     message.textContent = error instanceof Error ? error.message : t('placeFailed');
   } finally {
@@ -607,7 +744,6 @@ fetchLiveReadings().catch((error) => {
   const notice = document.getElementById('data-error');
   notice.textContent = `${t(dataErrorKey)} ${error instanceof Error ? error.message : ''}`.trim();
   notice.hidden = false;
-  document.getElementById('region-grid').innerHTML = `<p class="region-skeleton">${t('dataLoadingError')}</p>`;
   document.getElementById('map-region-list').innerHTML = `<p class="region-skeleton">${t('dataLoadingError')}</p>`;
   document.getElementById('pm-status').textContent = t('dataUnavailableStatus');
   document.getElementById('psi-status').textContent = t('dataUnavailableStatus');

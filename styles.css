@@ -90,18 +90,6 @@ h2 { margin-bottom: 0; font-size: clamp(27px, 3.4vw, 36px); font-weight: 700; li
 .reading-status { margin: 9px 0 0; color: #637468; font-size: 10px; font-weight: 600; }
 .notice { margin-top: 13px; padding: 11px 14px; border-radius: 9px; font-size: 12px; }
 .error-notice { color: #8d4e39; background: #f9e9e0; }
-.regions-heading { display: flex; align-items: end; justify-content: space-between; margin: 36px 0 14px; }
-.regions-heading h3 { margin: 0 0 4px; font-size: 17px; letter-spacing: -.03em; }
-.regions-heading p, .unit-note { margin: 0; color: #869087; font-size: 10px; }
-.unit-note i { margin: 0 4px; font-style: normal; color: #c6c8bd; }
-.region-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-.region-card { padding: 15px 14px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, .58); }
-.region-card h4 { margin: 0 0 14px; font-size: 12px; font-weight: 700; text-transform: capitalize; }
-.region-values { display: flex; justify-content: space-between; gap: 6px; }
-.region-value { display: flex; flex-direction: column; gap: 4px; }
-.region-value span { color: #8b938d; font-size: 8px; }
-.region-value strong { font-family: 'Manrope', sans-serif; font-size: 17px; letter-spacing: -.04em; }
-.region-card .region-status { margin: 11px 0 0; padding-top: 9px; border-top: 1px solid #eeede7; color: #718075; font-size: 9px; }
 .region-skeleton { grid-column: 1 / -1; padding: 24px; border: 1px dashed #d8dbd0; border-radius: 12px; color: #7e8980; text-align: center; font-size: 12px; }
 .data-note { margin: 14px 0 0; color: #939991; font-size: 9px; line-height: 1.7; }
 .place-section { padding: 58px 0; background: #e9ede3; }
@@ -128,6 +116,14 @@ h2 { margin-bottom: 0; font-size: clamp(27px, 3.4vw, 36px); font-weight: 700; li
 .result-location-top { display: flex; justify-content: space-between; gap: 15px; align-items: center; }
 .result-region { color: var(--green); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .result-place-name { margin: 7px 0 11px; font-family: 'Manrope', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -.04em; }
+.destination-photo { margin: 0 0 12px; }
+.destination-photo-image-link { display: block; overflow: hidden; border-radius: 9px; background: #e8ebe4; }
+.destination-photo img { display: block; width: 100%; height: 145px; object-fit: cover; }
+.destination-photo figcaption { display: flex; flex-wrap: wrap; gap: 3px 8px; margin-top: 6px; color: #7c867e; font-size: 8px; line-height: 1.45; }
+.destination-photo-source { color: var(--green); font-weight: 700; text-decoration: none; }
+.destination-photo-source:hover { text-decoration: underline; }
+.destination-photo-note { flex-basis: 100%; }
+.destination-photo-status { margin: 0 0 12px; color: #7c867e; font-size: 9px; line-height: 1.5; }
 .result-numbers { display: flex; gap: 19px; margin-bottom: 12px; }
 .result-number { color: #89928a; font-size: 9px; }
 .result-number strong { display: block; margin-top: 2px; color: var(--ink); font-family: 'Manrope', sans-serif; font-size: 16px; }
@@ -213,7 +209,6 @@ body.masks-on .mask-overlay { opacity: 1; }
   .topbar { height: 65px; padding: 0 20px; }
   .intro { grid-template-columns: 1.1fr .9fr; gap: 20px; min-height: 315px; }
   .intro-art { height: 230px; }
-  .region-grid { grid-template-columns: repeat(3, 1fr); }
   .place-layout { gap: 28px; }
   .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 13px; }
   .google-map-frame { height: 310px; }
@@ -236,9 +231,6 @@ body.masks-on .mask-overlay { opacity: 1; }
   .source-tag { margin-top: 3px; font-size: 8px; }
   .headline-readings { grid-template-columns: 1fr; gap: 10px; }
   .reading-card { min-height: 190px; padding: 19px; }
-  .region-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .regions-heading { align-items: start; }
-  .unit-note { padding-top: 4px; font-size: 9px; }
   .place-section { padding: 43px 0; }
   .place-layout { grid-template-columns: 1fr; gap: 20px; }
   .place-copy > p:not(.eyebrow) { margin-bottom: 20px; }
