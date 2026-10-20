@@ -127,6 +127,9 @@ h2 { margin-bottom: 0; font-size: clamp(27px, 3.4vw, 36px); font-weight: 700; li
 .result-numbers { display: flex; gap: 19px; margin-bottom: 12px; }
 .result-number { color: #89928a; font-size: 9px; }
 .result-number strong { display: block; margin-top: 2px; color: var(--ink); font-family: 'Manrope', sans-serif; font-size: 16px; }
+.cigarette-equivalent-result { display: flex; justify-content: space-between; align-items: baseline; gap: 7px; margin: 0 0 12px; padding: 9px 10px; border-radius: 8px; color: #657166; background: #f1f3ec; font-size: 9px; line-height: 1.4; }
+.cigarette-equivalent-result strong { color: var(--green-dark); font-family: 'Manrope', sans-serif; font-size: 10px; text-align: right; white-space: nowrap; }
+.cigarette-equivalent-note { margin: -7px 0 12px; color: #89928a; font-size: 8px; line-height: 1.45; }
 .recommendation { margin: 0; padding: 10px 12px; border-radius: 8px; color: #526a56; background: #edf3e9; font-size: 10px; line-height: 1.55; }
 .recommendation.caution { color: #86633c; background: #f8f0df; }
 .recommendation.avoid { color: #985d48; background: #f8e8df; }
@@ -163,7 +166,7 @@ body.masks-on .mask-overlay { opacity: 1; }
 .map-region-markers { position: absolute; z-index: 1; inset: 0; pointer-events: none; }
 .map-region-item { position: absolute; width: 124px; padding: 7px 8px; border: 1px solid rgba(36, 54, 42, .13); border-left: 3px solid var(--region-color); border-radius: 9px; color: var(--ink); background: rgba(255, 255, 252, .95); box-shadow: 0 5px 16px rgba(32, 48, 37, .2); backdrop-filter: blur(3px); }
 .map-region-item[data-region="north"] { left: 50%; top: 16%; transform: translate(-50%, -50%); }
-.map-region-item[data-region="central"] { left: 50%; top: 43%; transform: translate(-50%, -50%); }
+.map-region-item[data-region="central"] { left: 50%; top: 47%; transform: translate(-50%, -50%); }
 .map-region-item[data-region="south"] { left: 50%; top: 78%; transform: translate(-50%, -50%); }
 .map-region-item[data-region="west"] { left: 18%; top: 56%; transform: translate(-50%, -50%); }
 .map-region-item[data-region="east"] { left: 82%; top: 56%; transform: translate(-50%, -50%); }
@@ -176,6 +179,8 @@ body.masks-on .mask-overlay { opacity: 1; }
 .map-region-values { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 .map-value { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: #7b877e; font-size: 8px; white-space: nowrap; }
 .map-value strong { color: #293b30; font-family: 'Manrope', sans-serif; font-size: 14px; letter-spacing: -.03em; }
+.map-cigarette-equivalent { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 4px; margin: 5px 0 0; padding-top: 4px; border-top: 1px solid rgba(36, 54, 42, .1); color: #77837a; font-size: 7px; line-height: 1.25; }
+.map-cigarette-equivalent strong { color: #293b30; font-family: 'Manrope', sans-serif; font-size: 7px; white-space: nowrap; }
 .map-skeleton { position: absolute; top: 50%; left: 50%; width: max-content; max-width: calc(100% - 24px); padding: 9px 12px; transform: translate(-50%, -50%); border: 0; color: var(--muted); background: rgba(255, 255, 252, .94); font-size: 10px; }
 .map-caption { margin: 8px 2px 0; color: #92988f; font-size: 9px; line-height: 1.5; }
 .food-section { padding: 58px 0 55px; background: #e9ede3; }
@@ -267,4 +272,13 @@ body.masks-on .mask-overlay { opacity: 1; }
   .footer-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .footer-inner p { text-align: right; }
   .footer-inner > a:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 360px) {
+  .map-region-item { width: 78px; padding: 5px; }
+  .map-region-item[data-region="central"] { width: 72px; }
+  .map-region-name { gap: 3px; margin-bottom: 3px; font-size: 8px; }
+  .map-value { font-size: 6px; }
+  .map-value strong { font-size: 11px; }
+  .map-cigarette-equivalent { font-size: 6px; }
+  .map-cigarette-equivalent strong { font-size: 6px; }
 }

@@ -34,12 +34,18 @@ const COPY = {
     dataNote: 'Readings are from Singapore’s open government real-time API. 1-hour PM2.5 and 24-hour PSI are different measures; use PSI for general health guidance.',
     mapEyebrow: 'FIVE REPORTING REGIONS',
     mapTitle: 'Singapore, by region',
-    mapSubtitle: 'Live 1-hour PM2.5 and 24-hour PSI readings for five Singapore regions.',
+    mapSubtitle: 'Live regional readings plus a rough one-hour cigarette-equivalent estimate for unmasked exposure.',
     mapFrameTitle: 'Google Map of Singapore',
-    mapCaption: 'PM2.5 values are µg/m³. Markers show approximate NEA reporting-centre readings, not official region boundaries.',
+    mapCaption: 'Markers show approximate NEA reporting-centre readings, not official boundaries. Estimate = current 1-hour PM2.5 ÷ (22 × 24), assuming one outdoor hour without mask filtration. This linearly scales a commonly cited Berkeley Earth risk analogy (22 µg/m³ for 24 hours ≈ 1 cigarette); it is not a literal smoke-dose comparison or personal risk prediction. Follow NEA advice.',
     mapLoading: 'Loading regional readings…',
     mapPm: 'PM2.5 · 1h',
     mapPsi: 'PSI · 24h',
+    cigaretteEquivalentShort: 'No proper mask · 1h',
+    cigaretteEquivalentUnitShort: 'cig eq.',
+    cigaretteEquivalentUnit: 'cigarette-equivalent',
+    cigaretteEquivalentLabel: 'Outdoor · no proper mask · 1 hour',
+    cigaretteEquivalentAria: '{value} cigarette-equivalent for one hour without a proper mask.',
+    cigaretteEquivalentNote: 'Rough risk analogy only; not a literal cigarette dose or personal risk estimate.',
     placeEyebrow: 'YOUR NEXT STOP',
     placeTitle: 'Going somewhere?',
     placeDescription: 'Look up a Singapore place, address or postal code. We’ll match it to the nearest reporting region and give you a quick outdoor-activity check.',
@@ -157,12 +163,18 @@ const COPY = {
     dataNote: '数据来自新加坡政府实时开放数据 API。1 小时 PM2.5 与 24 小时 PSI 是不同指标；一般健康建议请参考 PSI。',
     mapEyebrow: '五个监测区域',
     mapTitle: '新加坡区域空气状况',
-    mapSubtitle: '查看新加坡五个区域的实时 1 小时 PM2.5 与 24 小时 PSI 读数。',
+    mapSubtitle: '查看各区域实时读数及未佩戴合适口罩 1 小时的香烟等效粗略估算。',
     mapFrameTitle: '新加坡 Google 地图',
-    mapCaption: 'PM2.5 单位为 µg/m³。标记显示 NEA 监测中心的大致读数，并非官方区域边界。',
+    mapCaption: '标记显示 NEA 监测中心的大致读数，并非官方区域边界。估算公式为当前 1 小时 PM2.5 ÷ (22 × 24)，假设户外停留 1 小时且不计算口罩过滤效果。该公式按常见的 Berkeley Earth 风险类比（22 µg/m³ 持续 24 小时约等于 1 支香烟）线性换算，并非实际烟雾剂量或个人风险预测。请遵循 NEA 建议。',
     mapLoading: '正在读取各区域数据…',
     mapPm: 'PM2.5 · 1h',
     mapPsi: 'PSI · 24h',
+    cigaretteEquivalentShort: '未正确戴口罩 · 1h',
+    cigaretteEquivalentUnitShort: '支香烟等效',
+    cigaretteEquivalentUnit: '支香烟等效',
+    cigaretteEquivalentLabel: '户外 · 未正确佩戴口罩 · 1 小时',
+    cigaretteEquivalentAria: '未正确佩戴口罩在户外停留 1 小时的香烟等效估算值为 {value}。',
+    cigaretteEquivalentNote: '仅为粗略风险类比，并非实际香烟剂量或个人风险估算。',
     placeEyebrow: '下一站',
     placeTitle: '准备去哪里？',
     placeDescription: '搜索新加坡地点、地址或邮政编码。我们会匹配最近的监测区域，并提供简短的户外活动建议。',
@@ -419,6 +431,7 @@ function renderReadings(pmData, psiData) {
   const timestamp = psiItem.updatedTimestamp || pmItem.updatedTimestamp || psiItem.timestamp || pmItem.timestamp;
   currentReadings = { regions, timestamp };
   renderDashboard();
+  if (selectedPlace) renderPlaceResult(selectedPlace);
 }
 
 function renderDashboard() {
@@ -452,17 +465,25 @@ function renderDashboard() {
   document.getElementById('update-indicator').style.backgroundColor = dataErrorKey ? '#c66a50' : '#7ea878';
 }
 
+function cigaretteEquivalentForHour(pm25) {
+  const estimate = pm25 / (22 * 24);
+  return estimate < 0.05 ? '<0.1' : `≈${estimate.toFixed(1)}`;
+}
+
 function renderMapRegions(regions) {
   const list = document.getElementById('map-region-list');
   list.innerHTML = regions.map((region) => {
     const condition = psiCondition(region.psi);
+    const cigaretteEquivalent = cigaretteEquivalentForHour(region.pm);
+    const ariaLabel = `${regionName(region.name)}. ${t('mapPm')} ${region.pm} µg/m³; ${t('mapPsi')} ${region.psi}; ${t('cigaretteEquivalentAria', { value: cigaretteEquivalent })}`;
     return `
-      <article class="map-region-item" data-region="${region.name}" data-level="${condition.level}" style="--region-color:${condition.color}" aria-label="${regionName(region.name)}. ${t('mapPm')} ${region.pm} µg/m³; ${t('mapPsi')} ${region.psi}.">
+      <article class="map-region-item" data-region="${region.name}" data-level="${condition.level}" style="--region-color:${condition.color}" aria-label="${escapeHtml(ariaLabel)}">
         <h3 class="map-region-name"><span class="map-region-dot"></span>${regionName(region.name)}</h3>
         <div class="map-region-values">
           <span class="map-value">${t('mapPm')}<strong>${region.pm}</strong></span>
           <span class="map-value">${t('mapPsi')}<strong>${region.psi}</strong></span>
         </div>
+        <p class="map-cigarette-equivalent"><span>${t('cigaretteEquivalentShort')}</span><strong>${escapeHtml(cigaretteEquivalent)} ${t('cigaretteEquivalentUnitShort')}</strong></p>
       </article>
     `;
   }).join('');
@@ -504,6 +525,7 @@ function renderPlaceResult(result) {
   const advice = healthAdvice(region);
   const name = result.SEARCHVAL || result.ADDRESS || 'Selected location';
   const address = result.ADDRESS && result.ADDRESS !== name ? result.ADDRESS : '';
+  const cigaretteEquivalent = cigaretteEquivalentForHour(region.pm);
   const photoMarkup = selectedPlacePhoto
     ? `
       <figure class="destination-photo">
@@ -530,6 +552,11 @@ function renderPlaceResult(result) {
         <span class="result-number">${t('pmValueLabel')}<strong>${region.pm} µg/m³</strong></span>
         <span class="result-number">${t('psiValueLabel')}<strong>${region.psi}</strong></span>
       </div>
+      <div class="cigarette-equivalent-result">
+        <span>${t('cigaretteEquivalentLabel')}</span>
+        <strong>${escapeHtml(cigaretteEquivalent)} ${t('cigaretteEquivalentUnit')}</strong>
+      </div>
+      <p class="cigarette-equivalent-note">${t('cigaretteEquivalentNote')}</p>
       <p class="recommendation ${advice.tone}">${t(advice.key)}</p>
     </article>
   `;
