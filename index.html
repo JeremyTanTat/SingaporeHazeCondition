@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ed">
+  <meta name="description" content="Live Singapore haze readings, local air-quality guidance and haze-ready photo masks.">
+  <title>Haze How Liao?</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='20' fill='%23294d3a'/%3E%3Ctext x='13' y='45' font-family='Arial,sans-serif' font-size='40' font-weight='700' fill='%23f6f1de'%3Eh.%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://api-open.data.gov.sg">
+  <link rel="preconnect" href="https://www.onemap.gov.sg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Haze How Liao? home">
+      <span class="brand-mark" aria-hidden="true">h.</span>
+      <span>Haze How Liao<span class="brand-question">?</span></span>
+    </a>
+    <div class="topbar-actions">
+      <div class="language-switch" role="group" aria-label="Choose language" data-i18n-aria="languageLabel">
+        <button type="button" class="language-option is-active" id="lang-en" data-language="en" aria-pressed="true">EN</button>
+        <button type="button" class="language-option" id="lang-zh" data-language="zh" aria-pressed="false">简体中文</button>
+      </div>
+      <a class="whatsapp-share topbar-share" id="whatsapp-share" href="https://wa.me/" target="_blank" rel="noreferrer" aria-label="Share Haze How Liao? on WhatsApp" data-i18n-aria="shareWhatsAppLabel" data-i18n-title="shareWhatsAppLabel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 2a8 8 0 0 1 6.9 12.1l-.4.6.8 2.9-3-.8-.6.4A8 8 0 1 1 12 4Zm-3.4 3c-.3 0-.6.1-.9.4-.3.4-1.1 1.2-1.1 2.7s1.2 3.2 1.3 3.4c.2.2 2.3 3.7 5.7 5 2.8 1.1 3.4.9 4 .8.6-.1 2-.8 2.3-1.6.3-.7.3-1.4.2-1.5-.1-.2-.3-.2-.6-.4l-2.3-1.1c-.3-.1-.5-.2-.7.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.7-1-.9-1.6-1.9-1.8-2.3-.2-.3 0-.5.1-.6.2-.2.4-.4.5-.6.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.8-.5h-.7Z"></path></svg>
+      </a>
+      <a class="official-link" href="https://www.haze.gov.sg/" target="_blank" rel="noreferrer" data-i18n="officialLink">
+      NEA haze updates <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro shell">
+      <div class="intro-copy">
+        <p class="eyebrow"><span class="live-dot"></span><span data-i18n="introEyebrow">SINGAPORE AIR CHECK</span></p>
+        <h1 data-i18n="heroTitle">Haze how liao?</h1>
+        <p class="intro-text" data-i18n="introText">A little haze check before you head out. See what's in the air, find your neighbourhood, and know when to mask up.</p>
+        <p class="updated-line"><span data-i18n="updatedLabel">Updated</span> <time id="updated-at" data-i18n="loadingTime">Fetching latest readings…</time><span class="update-indicator" id="update-indicator" aria-hidden="true"></span></p>
+      </div>
+      <div class="intro-art" aria-hidden="true">
+        <div class="sun"></div>
+        <div class="art-cloud cloud-one"></div>
+        <div class="art-cloud cloud-two"></div>
+        <div class="skyline skyline-back"></div>
+        <div class="skyline skyline-front"></div>
+        <span class="art-caption" data-i18n="artCaption">Little red dot,<br>big fresh-air energy.</span>
+      </div>
+    </section>
+
+    <section class="air-section shell" aria-labelledby="air-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" data-i18n="latestEyebrow">THE LATEST READ</p>
+          <h2 id="air-title" data-i18n="airTitle">Air check, Singapore</h2>
+        </div>
+        <span class="source-tag"><span class="source-dot"></span><span data-i18n="liveData">NEA LIVE DATA</span></span>
+      </div>
+      <div class="headline-readings">
+        <article class="reading-card pm-card">
+          <div class="reading-top">
+            <span class="reading-icon pm-icon" aria-hidden="true">PM</span>
+            <span class="reading-period" data-i18n="oneHourAverage">1-hour average</span>
+          </div>
+          <p class="reading-label" data-i18n="pmReadingLabel">PM2.5</p>
+          <div class="reading-value-row"><strong id="national-pm">—</strong><span>µg/m³</span></div>
+          <p class="reading-foot"><span data-i18n="highestReading">Highest reading</span> · <span id="pm-location">Waiting for data</span></p>
+          <div class="scale-track"><span id="pm-scale"></span></div>
+          <p class="reading-status" id="pm-status">Loading condition…</p>
+        </article>
+        <article class="reading-card psi-card">
+          <div class="reading-top">
+            <span class="reading-icon psi-icon" aria-hidden="true">PSI</span>
+            <span class="reading-period" data-i18n="twentyFourHourAverage">24-hour average</span>
+          </div>
+          <p class="reading-label" data-i18n="psiReadingLabel">Pollutant Standards Index</p>
+          <div class="reading-value-row"><strong id="national-psi">—</strong><span>PSI</span></div>
+          <p class="reading-foot"><span data-i18n="highestReading">Highest reading</span> · <span id="psi-location">Waiting for data</span></p>
+          <div class="scale-track"><span id="psi-scale"></span></div>
+          <p class="reading-status" id="psi-status">Loading condition…</p>
+        </article>
+      </div>
+      <div id="data-error" class="notice error-notice" role="status" hidden></div>
+
+      <div class="regions-heading">
+        <div>
+          <h3 data-i18n="byRegion">By region</h3>
+          <p data-i18n="regionNote">Readings can vary across the island.</p>
+        </div>
+        <span class="unit-note">PM2.5 µg/m³ <i>·</i> PSI</span>
+      </div>
+      <div class="region-grid" id="region-grid" aria-live="polite">
+        <div class="region-skeleton">Checking the air…</div>
+      </div>
+      <p class="data-note" data-i18n="dataNote">Readings are from Singapore’s open government real-time API. 1-hour PM2.5 and 24-hour PSI are different measures; use PSI for general health guidance.</p>
+    </section>
+
+    <section class="map-section shell" aria-labelledby="map-title">
+      <div class="section-heading map-heading">
+        <div>
+          <p class="eyebrow" data-i18n="mapEyebrow">FIVE REPORTING REGIONS</p>
+          <h2 id="map-title" data-i18n="mapTitle">Singapore, by region</h2>
+          <p class="section-subtitle" data-i18n="mapSubtitle">Live 1-hour PM2.5 and 24-hour PSI readings for five Singapore regions.</p>
+        </div>
+      </div>
+      <div class="map-panel">
+        <div class="singapore-map-wrap">
+          <div class="google-map-frame">
+            <iframe class="google-map-iframe" src="https://maps.google.com/maps?q=Singapore&amp;z=11&amp;output=embed" title="Google Map of Singapore" data-i18n-title="mapFrameTitle" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+            <div class="map-region-markers" id="map-region-list" aria-live="polite">
+              <div class="region-skeleton map-skeleton" data-i18n="mapLoading">Loading regional readings…</div>
+            </div>
+          </div>
+          <p class="map-caption" data-i18n="mapCaption">Markers show approximate NEA reporting-centre readings, not official region boundaries.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="place-section">
+      <div class="shell place-layout">
+        <div class="place-copy">
+          <p class="eyebrow" data-i18n="placeEyebrow">YOUR NEXT STOP</p>
+          <h2 data-i18n="placeTitle">Going somewhere?</h2>
+          <p data-i18n="placeDescription">Look up a Singapore place, address or postal code. We’ll match it to the nearest reporting region and give you a quick outdoor-activity check.</p>
+          <form id="place-form" class="place-form">
+            <label for="place-input" data-i18n="placeLabel">Where in Singapore?</label>
+            <div class="input-row">
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input id="place-input" name="place" type="search" placeholder="e.g. Gardens by the Bay" data-i18n-placeholder="placePlaceholder" autocomplete="off" required maxlength="120">
+              <button type="submit" id="place-submit"><span data-i18n="checkPlace">Check place</span><span aria-hidden="true">↗</span></button>
+            </div>
+            <p class="form-hint" data-i18n="placeHint">Singapore locations only · checked against OneMap</p>
+            <p class="form-message" id="place-message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <div class="place-result" id="place-result" aria-live="polite">
+          <div class="result-placeholder">
+            <span class="pin-illustration" aria-hidden="true">⌖</span>
+            <p data-i18n="placePlaceholderTitle">Your local haze check will show up here.</p>
+            <span data-i18n="placePlaceholderHint">Pick a place to get started</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mask-section shell">
+      <div class="section-heading mask-heading">
+        <div>
+          <p class="eyebrow" data-i18n="familyEyebrow">THE HAZE HOW LIAO FAMILY</p>
+          <h2 data-i18n="familyTitle">Mask up, or can relax?</h2>
+          <p class="section-subtitle" data-i18n="familySubtitle">A playful preview that changes with the latest 1-hour PM2.5 reading.</p>
+        </div>
+        <div class="mask-legend"><span class="mask-swatch"></span><span id="mask-summary">Checking the haze before choosing our masks…</span></div>
+      </div>
+      <div class="photo-grid">
+        <figure class="photo-card">
+          <div class="photo-wrap">
+            <img src="HazeMask/Haze%20Mask%201.jpeg" alt="Two family members at a playground" data-i18n-alt="familyPhoto1Alt">
+            <svg class="face-masks" aria-hidden="true" data-photo="1"></svg>
+            <span class="photo-tag" data-i18n="photoTag1">01 / OUT & ABOUT</span>
+          </div>
+          <figcaption><strong data-i18n="photo1Title">Park day, planned.</strong><span data-i18n="photo1Text">Better to check before heading out.</span></figcaption>
+        </figure>
+        <figure class="photo-card">
+          <div class="photo-wrap">
+            <img src="HazeMask/Haze%20Mask%202.jpeg" alt="A father and child taking a selfie" data-i18n-alt="familyPhoto2Alt">
+            <svg class="face-masks" aria-hidden="true" data-photo="2"></svg>
+            <span class="photo-tag" data-i18n="photoTag2">02 / QUICK SELFIE</span>
+          </div>
+          <figcaption><strong data-i18n="photo2Title">Good vibes, clear advice.</strong><span data-i18n="photo2Text">Keep a well-fitting mask handy.</span></figcaption>
+        </figure>
+        <figure class="photo-card">
+          <div class="photo-wrap">
+            <img src="HazeMask/Haze%20Mask%203.jpeg" alt="A child beside a lake on a sunny day" data-i18n-alt="familyPhoto3Alt">
+            <svg class="face-masks" aria-hidden="true" data-photo="3"></svg>
+            <span class="photo-tag" data-i18n="photoTag3">03 / SUNNY SIDE</span>
+          </div>
+          <figcaption><strong data-i18n="photo3Title">Play safe, little one.</strong><span data-i18n="photo3Text">Children may be more sensitive to haze.</span></figcaption>
+        </figure>
+        <figure class="photo-card">
+          <div class="photo-wrap">
+            <img src="HazeMask/Haze%20Mask%204.jpeg" alt="A father and child beside a lake" data-i18n-alt="familyPhoto4Alt">
+            <svg class="face-masks" aria-hidden="true" data-photo="4"></svg>
+            <span class="photo-tag" data-i18n="photoTag4">04 / LAKESIDE</span>
+          </div>
+          <figcaption><strong data-i18n="photo4Title">Fresh-air daydreams.</strong><span data-i18n="photo4Text">Let the readings set the pace.</span></figcaption>
+        </figure>
+      </div>
+      <p class="photo-disclaimer" data-i18n="photoDisclaimer">Illustrative mask overlays only — not a medical assessment or a substitute for a properly fitted respirator. Photos are shown as supplied.</p>
+    </section>
+
+    <section class="food-section">
+      <div class="shell">
+        <div class="section-heading food-heading">
+          <div>
+            <p class="eyebrow" data-i18n="foodEyebrow">A LITTLE NOURISHMENT</p>
+            <h2 data-i18n="foodTitle">Good food for hazy days</h2>
+            <p class="section-subtitle" data-i18n="foodSubtitle">Comforting, balanced choices to keep you nourished and hydrated.</p>
+          </div>
+        </div>
+        <div class="food-grid">
+          <article class="food-card">
+            <img src="https://images.unsplash.com/photo-1478749485505-2a903a729c63?auto=format&amp;fit=crop&amp;w=900&amp;h=600&amp;q=85" alt="A glass of water beside a bowl of warm soup" data-i18n-alt="food1Alt" loading="lazy">
+            <div class="food-card-copy">
+              <span class="food-number">01 / <span data-i18n="foodKind1">HYDRATE</span></span>
+              <h3 data-i18n="food1Title">Water &amp; warm soup</h3>
+              <p data-i18n="food1Text">Keep water on hand and enjoy a warm soup for a comforting, hydrating meal.</p>
+            </div>
+          </article>
+          <article class="food-card">
+            <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="A balanced plate with fruit and vegetables" data-i18n-alt="food2Alt" loading="lazy">
+            <div class="food-card-copy">
+              <span class="food-number">02 / <span data-i18n="foodKind2">FRESH &amp; COLOURFUL</span></span>
+              <h3 data-i18n="food2Title">Leafy greens &amp; fresh produce</h3>
+              <p data-i18n="food2Text">Enjoy fresh produce as part of a varied diet; it’s nourishing, but not a haze shield.</p>
+            </div>
+          </article>
+          <article class="food-card">
+            <img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="A nourishing meal with vegetables and protein" data-i18n-alt="food3Alt" loading="lazy">
+            <div class="food-card-copy">
+              <span class="food-number">03 / <span data-i18n="foodKind3">BALANCED MEAL</span></span>
+              <h3 data-i18n="food3Title">A balanced meal with protein</h3>
+              <p data-i18n="food3Text">Pair vegetables with protein and whole grains for a satisfying everyday meal.</p>
+            </div>
+          </article>
+        </div>
+        <p class="food-disclaimer" data-i18n="foodDisclaimer">No food or drink prevents haze exposure or treats its effects. Reduce time outdoors when air quality is poor and follow NEA health advice.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer-inner">
+      <a class="brand footer-brand" href="#"><span class="brand-mark" aria-hidden="true">h.</span><span>Haze How Liao<span class="brand-question">?</span></span></a>
+      <p data-i18n="footerTagline">Made for checking the air, not worrying about it.</p>
+      <a href="https://www.haze.gov.sg/" target="_blank" rel="noreferrer" data-i18n="footerOfficial">Official NEA haze information ↗</a>
+    </div>
+    <div class="shell footer-note" data-i18n="footerNote">Data refreshes automatically. For health advisories and the latest official guidance, always refer to NEA.</div>
+    <div class="shell footer-bottom">
+      <div class="visitor-counter" aria-live="polite">
+        <span class="visitor-icon" aria-hidden="true">↗</span>
+        <span data-i18n="visitorLabel">Page visits on this device</span>
+        <strong id="visit-count">—</strong>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
