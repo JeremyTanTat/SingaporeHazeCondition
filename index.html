@@ -73,6 +73,52 @@
         </div>
         <span class="source-tag"><span class="source-dot"></span><span data-i18n="liveData">NEA LIVE DATA</span></span>
       </div>
+    </section>
+
+    <section class="map-section shell" aria-labelledby="map-title">
+      <div class="section-heading map-heading">
+        <div>
+          <p class="eyebrow" data-i18n="mapEyebrow">FIVE REPORTING REGIONS</p>
+          <h2 id="map-title" data-i18n="mapTitle">Singapore, by region</h2>
+          <p class="section-subtitle" data-i18n="mapSubtitle">Live regional readings plus a rough one-hour cigarette-equivalent estimate for unmasked exposure.</p>
+        </div>
+      </div>
+      <div class="map-panel">
+        <div class="singapore-map-wrap">
+          <div class="google-map-frame">
+            <iframe class="google-map-iframe" src="https://maps.google.com/maps?q=Singapore&amp;z=11&amp;output=embed" title="Google Map of Singapore" data-i18n-title="mapFrameTitle" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+            <div class="map-region-markers" id="map-region-list" aria-live="polite">
+              <div class="region-skeleton map-skeleton" data-i18n="mapLoading">Loading regional readings…</div>
+            </div>
+          </div>
+          <p class="map-caption" data-i18n="mapCaption">Markers show approximate NEA reporting-centre readings, not official region boundaries.</p>
+        </div>
+        <div class="reading-legend" aria-label="Reading colour legend" data-i18n-aria="legendAria">
+          <div class="reading-legend-group">
+            <h3 data-i18n="pmLegendTitle">PM2.5 · 1 hour</h3>
+            <ul>
+              <li><span class="legend-swatch" style="--legend-color:#78a876"></span><span data-i18n="pmLegendNormal">Normal · 0–55</span></li>
+              <li><span class="legend-swatch" style="--legend-color:#e2a451"></span><span data-i18n="pmLegendElevated">Elevated · 56–150</span></li>
+              <li><span class="legend-swatch" style="--legend-color:#d9794f"></span><span data-i18n="pmLegendHigh">High · 151–250</span></li>
+              <li><span class="legend-swatch" style="--legend-color:#b84b48"></span><span data-i18n="pmLegendVeryHigh">Very high · 251+</span></li>
+            </ul>
+          </div>
+          <div class="reading-legend-group">
+            <h3 data-i18n="psiLegendTitle">PSI · 24 hours</h3>
+            <ul>
+              <li><span class="legend-swatch" style="--legend-color:#78a876"></span><span data-i18n="psiLegendGood">Good · 0–50</span></li>
+              <li><span class="legend-swatch" style="--legend-color:#e2a451"></span><span data-i18n="psiLegendModerate">Moderate · 51–100</span></li>
+              <li><span class="legend-swatch" style="--legend-color:#d9794f"></span><span data-i18n="psiLegendUnhealthy">Unhealthy · 101–200</span></li>
+              <li><span class="legend-swatch" style="--legend-color:#c34d46"></span><span data-i18n="psiLegendVeryUnhealthy">Very unhealthy · 201–300</span></li>
+              <li><span class="legend-swatch" style="--legend-color:#75414c"></span><span data-i18n="psiLegendHazardous">Hazardous · 301+</span></li>
+            </ul>
+          </div>
+          <a class="reading-legend-source" href="https://www.haze.gov.sg/" target="_blank" rel="noreferrer" data-i18n="legendSource">Official haze guide ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="readings-section shell" aria-label="Highest readings">
       <div class="headline-readings">
         <article class="reading-card pm-card">
           <div class="reading-top">
@@ -98,29 +144,7 @@
         </article>
       </div>
       <div id="data-error" class="notice error-notice" role="status" hidden></div>
-
       <p class="data-note" data-i18n="dataNote">Readings are from Singapore’s open government real-time API. 1-hour PM2.5 and 24-hour PSI are different measures; use PSI for general health guidance.</p>
-    </section>
-
-    <section class="map-section shell" aria-labelledby="map-title">
-      <div class="section-heading map-heading">
-        <div>
-          <p class="eyebrow" data-i18n="mapEyebrow">FIVE REPORTING REGIONS</p>
-          <h2 id="map-title" data-i18n="mapTitle">Singapore, by region</h2>
-          <p class="section-subtitle" data-i18n="mapSubtitle">Live 1-hour PM2.5 and 24-hour PSI readings for five Singapore regions.</p>
-        </div>
-      </div>
-      <div class="map-panel">
-        <div class="singapore-map-wrap">
-          <div class="google-map-frame">
-            <iframe class="google-map-iframe" src="https://maps.google.com/maps?q=Singapore&amp;z=11&amp;output=embed" title="Google Map of Singapore" data-i18n-title="mapFrameTitle" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-            <div class="map-region-markers" id="map-region-list" aria-live="polite">
-              <div class="region-skeleton map-skeleton" data-i18n="mapLoading">Loading regional readings…</div>
-            </div>
-          </div>
-          <p class="map-caption" data-i18n="mapCaption">Markers show approximate NEA reporting-centre readings, not official region boundaries.</p>
-        </div>
-      </div>
     </section>
 
     <section class="place-section">
@@ -150,14 +174,39 @@
       </div>
     </section>
 
+    <section class="news-section shell" aria-labelledby="news-title">
+      <div class="section-heading news-heading">
+        <div>
+          <p class="eyebrow" data-i18n="newsEyebrow">FROM THE NEWSROOMS</p>
+          <h2 id="news-title" data-i18n="newsTitle">Latest haze news</h2>
+          <p class="section-subtitle" id="news-updated" data-i18n="newsSubtitle">CNA and The Straits Times · refreshed daily at 12pm SGT</p>
+        </div>
+      </div>
+      <div class="news-grid" id="news-list" aria-live="polite">
+        <p class="region-skeleton" data-i18n="newsLoading">Fetching the latest haze stories…</p>
+      </div>
+    </section>
+
     <section class="mask-section shell">
       <div class="section-heading mask-heading">
         <div>
           <p class="eyebrow" data-i18n="familyEyebrow">THE HAZE HOW LIAO FAMILY</p>
           <h2 data-i18n="familyTitle">Mask up, or can relax?</h2>
-          <p class="section-subtitle" data-i18n="familySubtitle">A playful preview that changes with the latest 1-hour PM2.5 reading.</p>
+          <p class="section-subtitle" data-i18n="familySubtitle">Choose a region; masks are shown when its 1-hour PM2.5 is above normal.</p>
         </div>
-        <div class="mask-legend"><span class="mask-swatch"></span><span id="mask-summary">Checking the haze before choosing our masks…</span></div>
+        <div class="mask-controls">
+          <label class="mask-region-control" for="mask-region-select">
+            <span data-i18n="maskRegionLabel">Region for mask check</span>
+            <select id="mask-region-select" aria-describedby="mask-summary">
+              <option value="east">East</option>
+              <option value="south">South</option>
+              <option value="west">West</option>
+              <option value="north">North</option>
+              <option value="central" selected>Central</option>
+            </select>
+          </label>
+          <div class="mask-legend"><span class="mask-swatch"></span><span id="mask-summary" role="status" aria-live="polite">Choose a region to see the mask guidance.</span></div>
+        </div>
       </div>
       <div class="photo-grid">
         <figure class="photo-card">
@@ -233,6 +282,35 @@
         </div>
         <p class="food-disclaimer" data-i18n="foodDisclaimer">No food or drink prevents haze exposure or treats its effects. Reduce time outdoors when air quality is poor and follow NEA health advice.</p>
       </div>
+    </section>
+
+    <section class="feedback-section shell" aria-labelledby="feedback-title">
+        <div class="feedback-copy">
+          <p class="eyebrow" data-i18n="feedbackEyebrow">GET IN TOUCH</p>
+          <h2 id="feedback-title" data-i18n="feedbackTitle">Comments &amp; feedback</h2>
+          <p data-i18n="feedbackDescription">Have a suggestion or spotted something we can improve? Send a note below.</p>
+        </div>
+        <form id="feedback-form" class="feedback-form" novalidate>
+          <div class="feedback-fields">
+            <label>
+              <span data-i18n="feedbackName">Name</span>
+              <input name="name" type="text" autocomplete="name" maxlength="100" required>
+            </label>
+            <label>
+              <span data-i18n="feedbackContact">Contact (email or phone)</span>
+              <input name="contact" type="text" autocomplete="email" maxlength="150" required>
+            </label>
+          </div>
+          <label>
+            <span data-i18n="feedbackComment">Comment / feedback</span>
+            <textarea name="comment" rows="5" maxlength="3000" required></textarea>
+          </label>
+          <p class="feedback-privacy" data-i18n="feedbackPrivacy">Form processed by Formspree; your contact details are collected so the site owner can respond.</p>
+          <div class="feedback-submit-row">
+            <button type="submit" id="feedback-submit" data-i18n="feedbackSubmit">Send feedback</button>
+            <p id="feedback-message" class="feedback-message" role="status" aria-live="polite"></p>
+          </div>
+        </form>
     </section>
   </main>
 

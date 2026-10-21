@@ -1,6 +1,7 @@
 const DATA_BASE = 'https://api-open.data.gov.sg/v2/real-time/api';
 const ONEMAP_SEARCH = 'https://www.onemap.gov.sg/api/common/elastic/search';
 const COMMONS_API = 'https://commons.wikimedia.org/w/api.php';
+const FEEDBACK_FORM_ENDPOINT = 'https://formspree.io/f/xgaogzjk';
 const REGIONS = ['north', 'south', 'east', 'west', 'central'];
 const REGION_CENTRES = {
   north: { latitude: 1.41803, longitude: 103.82 },
@@ -8,6 +9,10 @@ const REGION_CENTRES = {
   east: { latitude: 1.35735, longitude: 103.94 },
   west: { latitude: 1.35735, longitude: 103.7 },
   central: { latitude: 1.35735, longitude: 103.82 }
+};
+const NEWS_SOURCE_HOSTS = {
+  CNA: 'www.channelnewsasia.com',
+  'The Straits Times': 'www.straitstimes.com'
 };
 const REGION_NAMES = {
   en: { north: 'North', south: 'South', east: 'East', west: 'West', central: 'Central' },
@@ -37,6 +42,38 @@ const COPY = {
     mapSubtitle: 'Live regional readings plus a rough one-hour cigarette-equivalent estimate for unmasked exposure.',
     mapFrameTitle: 'Google Map of Singapore',
     mapCaption: 'Markers show approximate NEA reporting-centre readings, not official boundaries. Estimate = current 1-hour PM2.5 ÷ (22 × 24), assuming one outdoor hour without mask filtration. This linearly scales a commonly cited Berkeley Earth risk analogy (22 µg/m³ for 24 hours ≈ 1 cigarette); it is not a literal smoke-dose comparison or personal risk prediction. Follow NEA advice.',
+    pmLegendTitle: 'PM2.5 · 1 hour',
+    pmLegendNormal: 'Normal · 0–55 µg/m³',
+    pmLegendElevated: 'Elevated · 56–150 µg/m³',
+    pmLegendHigh: 'High · 151–250 µg/m³',
+    pmLegendVeryHigh: 'Very high · 251+ µg/m³',
+    psiLegendTitle: 'PSI · 24 hours',
+    psiLegendGood: 'Good · 0–50',
+    psiLegendModerate: 'Moderate · 51–100',
+    psiLegendUnhealthy: 'Unhealthy · 101–200',
+    psiLegendVeryUnhealthy: 'Very unhealthy · 201–300',
+    psiLegendHazardous: 'Hazardous · 301+',
+    legendAria: 'Reading colour legend',
+    legendSource: 'Official haze guide ↗',
+    newsEyebrow: 'FROM THE NEWSROOMS',
+    newsTitle: 'Latest haze news',
+    newsSubtitle: 'CNA and The Straits Times · refreshed daily at 12pm SGT',
+    newsUpdatedAt: 'CNA and The Straits Times · refreshed {date} SGT',
+    newsLoading: 'Fetching the latest haze stories…',
+    newsError: 'The latest haze stories could not be loaded. Please try again later.',
+    newsRead: 'Read story ↗',
+    feedbackEyebrow: 'GET IN TOUCH',
+    feedbackTitle: 'Comments & feedback',
+    feedbackDescription: 'Have a suggestion or spotted something we can improve? Send a note below.',
+    feedbackName: 'Name',
+    feedbackContact: 'Contact (email or phone)',
+    feedbackComment: 'Comment / feedback',
+    feedbackPrivacy: 'Form processed by Formspree; your contact details are collected so the site owner can respond.',
+    feedbackSubmit: 'Send feedback',
+    feedbackSending: 'Sending…',
+    feedbackSuccess: 'Thanks — your feedback has been sent.',
+    feedbackNotConfigured: 'The feedback form is not connected yet. Add your Formspree form URL to FEEDBACK_FORM_ENDPOINT in app.js.',
+    feedbackSendError: 'Your feedback could not be sent. Please try again later.',
     mapLoading: 'Loading regional readings…',
     mapPm: 'PM2.5 · 1h',
     mapPsi: 'PSI · 24h',
@@ -67,7 +104,8 @@ const COPY = {
     placePlaceholderHint: 'Pick a place to get started',
     familyEyebrow: 'THE HAZE HOW LIAO FAMILY',
     familyTitle: 'Mask up, or can relax?',
-    familySubtitle: 'A photo preview that follows the live 1-hour PM2.5 reading.',
+    familySubtitle: 'Choose a region; masks are shown when its 1-hour PM2.5 is above normal.',
+    maskRegionLabel: 'Region for mask check',
     photo1Title: 'Park day, planned.',
     photo1Text: 'Better to check before heading out.',
     photoTag1: '01 / OUT & ABOUT',
@@ -119,8 +157,8 @@ const COPY = {
     unhealthy: 'Unhealthy',
     veryUnhealthy: 'Very unhealthy',
     hazardous: 'Hazardous',
-    maskOn: 'PM2.5 is elevated — masks are shown on the family photos.',
-    maskOff: 'PM2.5 is in the normal range — no masks are shown.',
+    maskOn: 'Mask-up for {region}: PM2.5 is above normal.',
+    maskOff: 'Mask-down for {region}: PM2.5 is normal (green).',
     regionSuffix: 'region',
     pmValueLabel: '1-hour PM2.5',
     psiValueLabel: '24-hour PSI',
@@ -166,6 +204,38 @@ const COPY = {
     mapSubtitle: '查看各区域实时读数及未佩戴合适口罩 1 小时的香烟等效粗略估算。',
     mapFrameTitle: '新加坡 Google 地图',
     mapCaption: '标记显示 NEA 监测中心的大致读数，并非官方区域边界。估算公式为当前 1 小时 PM2.5 ÷ (22 × 24)，假设户外停留 1 小时且不计算口罩过滤效果。该公式按常见的 Berkeley Earth 风险类比（22 µg/m³ 持续 24 小时约等于 1 支香烟）线性换算，并非实际烟雾剂量或个人风险预测。请遵循 NEA 建议。',
+    pmLegendTitle: 'PM2.5 · 1 小时',
+    pmLegendNormal: '正常 · 0–55 µg/m³',
+    pmLegendElevated: '偏高 · 56–150 µg/m³',
+    pmLegendHigh: '高 · 151–250 µg/m³',
+    pmLegendVeryHigh: '很高 · 251+ µg/m³',
+    psiLegendTitle: 'PSI · 24 小时',
+    psiLegendGood: '良好 · 0–50',
+    psiLegendModerate: '中等 · 51–100',
+    psiLegendUnhealthy: '不健康 · 101–200',
+    psiLegendVeryUnhealthy: '非常不健康 · 201–300',
+    psiLegendHazardous: '危险 · 301+',
+    legendAria: '读数颜色图例',
+    legendSource: '官方雾霾指南 ↗',
+    newsEyebrow: '新闻报道',
+    newsTitle: '最新雾霾新闻',
+    newsSubtitle: 'CNA 与《海峡时报》· 每天新加坡时间中午 12 点更新',
+    newsUpdatedAt: 'CNA 与《海峡时报》· 更新于 {date}（新加坡时间）',
+    newsLoading: '正在获取最新雾霾新闻…',
+    newsError: '无法加载最新雾霾新闻，请稍后再试。',
+    newsRead: '阅读报道 ↗',
+    feedbackEyebrow: '联系我们',
+    feedbackTitle: '意见与反馈',
+    feedbackDescription: '有建议或发现可改进之处？欢迎在下方留言。',
+    feedbackName: '姓名',
+    feedbackContact: '联系方式（电邮或电话）',
+    feedbackComment: '意见 / 反馈',
+    feedbackPrivacy: '表单由 Formspree 处理；收集您的联系方式是为了让网站负责人回复您。',
+    feedbackSubmit: '发送反馈',
+    feedbackSending: '正在发送…',
+    feedbackSuccess: '感谢您，反馈已发送。',
+    feedbackNotConfigured: '反馈表单尚未连接。请在 app.js 的 FEEDBACK_FORM_ENDPOINT 中填入您的 Formspree 表单网址。',
+    feedbackSendError: '暂时无法发送反馈，请稍后重试。',
     mapLoading: '正在读取各区域数据…',
     mapPm: 'PM2.5 · 1h',
     mapPsi: 'PSI · 24h',
@@ -196,7 +266,8 @@ const COPY = {
     placePlaceholderHint: '输入地点开始查询',
     familyEyebrow: 'Haze How Liao 一家',
     familyTitle: '要戴口罩，还是可以放松？',
-    familySubtitle: '照片中的口罩会根据实时 1 小时 PM2.5 读数显示或隐藏。',
+    familySubtitle: '选择一个区域；该区域 1 小时 PM2.5 高于正常范围时，照片会显示口罩。',
+    maskRegionLabel: '口罩检查区域',
     photo1Title: '公园出游，先看空气。',
     photo1Text: '出门前查看最新情况。',
     photoTag1: '01 / 户外时光',
@@ -248,8 +319,8 @@ const COPY = {
     unhealthy: '不健康',
     veryUnhealthy: '非常不健康',
     hazardous: '危险',
-    maskOn: 'PM2.5 偏高 — 照片中已显示口罩。',
-    maskOff: 'PM2.5 在正常范围 — 照片中不显示口罩。',
+    maskOn: '{region}：PM2.5 高于正常范围 — 戴上口罩。',
+    maskOff: '{region}：PM2.5 正常（绿色）— 放下口罩。',
     regionSuffix: '区域',
     pmValueLabel: '1 小时 PM2.5',
     psiValueLabel: '24 小时 PSI',
@@ -311,6 +382,8 @@ let selectedPlacePhoto = null;
 let selectedPlacePhotoStatus = 'none';
 let placePhotoRequest = 0;
 let dataErrorKey = null;
+let latestNewsData = null;
+let selectedMaskRegion = 'central';
 
 function t(key, replacements = {}) {
   let value = COPY[currentLanguage][key] || COPY.en[key] || key;
@@ -329,6 +402,9 @@ function applyLanguage(language) {
   document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
   document.querySelectorAll('[data-i18n]').forEach((element) => {
     element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll('#mask-region-select option').forEach((option) => {
+    option.textContent = regionName(option.value);
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
     element.placeholder = t(element.dataset.i18nPlaceholder);
@@ -352,13 +428,14 @@ function applyLanguage(language) {
   if (selectedPlace) renderPlaceResult(selectedPlace);
   renderVisitorCount(false);
   updateShareLink();
+  if (latestNewsData) renderNews(latestNewsData);
 }
 
 function pmCondition(value) {
-  if (value <= 55) return { key: 'normal', color: '#78a876', severity: 0 };
-  if (value <= 150) return { key: 'pmElevated', color: '#e2a451', severity: 1 };
-  if (value <= 250) return { key: 'pmHigh', color: '#d9794f', severity: 2 };
-  return { key: 'pmVeryHigh', color: '#b84b48', severity: 3 };
+  if (value <= 55) return { key: 'normal', color: '#78a876', severity: 0, level: 'normal' };
+  if (value <= 150) return { key: 'pmElevated', color: '#e2a451', severity: 1, level: 'elevated' };
+  if (value <= 250) return { key: 'pmHigh', color: '#d9794f', severity: 2, level: 'high' };
+  return { key: 'pmVeryHigh', color: '#b84b48', severity: 3, level: 'very-high' };
 }
 
 function psiCondition(value) {
@@ -447,6 +524,7 @@ function renderDashboard() {
   setStatus('pm-status', pmCondition(highestPm.pm), highestPm.pm, 300, 'pm-scale');
   setStatus('psi-status', psiCondition(highestPsi.psi), highestPsi.psi, 300, 'psi-scale');
   renderMapRegions(regions);
+  updateFamilyMasks();
 
   if (timestamp) {
     const date = new Date(timestamp);
@@ -458,35 +536,118 @@ function renderDashboard() {
         timeZone: 'Asia/Singapore'
       }).format(date) + (currentLanguage === 'zh' ? ' 新加坡时间' : ' SGT');
   }
-  const isMaskRecommended = highestPm.pm > 55;
-  document.body.classList.toggle('masks-on', isMaskRecommended);
-  document.getElementById('mask-summary').textContent = t(isMaskRecommended ? 'maskOn' : 'maskOff');
   document.getElementById('data-error').hidden = !dataErrorKey;
   document.getElementById('update-indicator').style.backgroundColor = dataErrorKey ? '#c66a50' : '#7ea878';
 }
 
+function updateFamilyMasks() {
+  const region = currentReadings.regions.find((item) => item.name === selectedMaskRegion);
+  if (!region) throw new Error(`No live readings found for the selected ${selectedMaskRegion} region.`);
+
+  const isNormal = pmCondition(region.pm).key === 'normal';
+  document.body.classList.toggle('masks-on', !isNormal);
+  document.getElementById('mask-summary').textContent = t(isNormal ? 'maskOff' : 'maskOn', {
+    region: regionName(region.name)
+  });
+}
+
 function cigaretteEquivalentForHour(pm25) {
   const estimate = pm25 / (22 * 24);
-  return estimate < 0.05 ? '<0.1' : `≈${estimate.toFixed(1)}`;
+  return `≈${estimate.toFixed(2)}`;
 }
 
 function renderMapRegions(regions) {
   const list = document.getElementById('map-region-list');
   list.innerHTML = regions.map((region) => {
-    const condition = psiCondition(region.psi);
+    const pmConditionForRegion = pmCondition(region.pm);
+    const psiConditionForRegion = psiCondition(region.psi);
     const cigaretteEquivalent = cigaretteEquivalentForHour(region.pm);
     const ariaLabel = `${regionName(region.name)}. ${t('mapPm')} ${region.pm} µg/m³; ${t('mapPsi')} ${region.psi}; ${t('cigaretteEquivalentAria', { value: cigaretteEquivalent })}`;
     return `
-      <article class="map-region-item" data-region="${region.name}" data-level="${condition.level}" style="--region-color:${condition.color}" aria-label="${escapeHtml(ariaLabel)}">
+      <article class="map-region-item" data-region="${region.name}" data-level="${pmConditionForRegion.level}" style="--region-color:${pmConditionForRegion.color}" aria-label="${escapeHtml(ariaLabel)}">
         <h3 class="map-region-name"><span class="map-region-dot"></span>${regionName(region.name)}</h3>
         <div class="map-region-values">
-          <span class="map-value">${t('mapPm')}<strong>${region.pm}</strong></span>
-          <span class="map-value">${t('mapPsi')}<strong>${region.psi}</strong></span>
+          <span class="map-value" style="--value-color:${pmConditionForRegion.color}">${t('mapPm')}<strong>${region.pm}</strong></span>
+          <span class="map-value" style="--value-color:${psiConditionForRegion.color}">${t('mapPsi')}<strong>${region.psi}</strong></span>
         </div>
         <p class="map-cigarette-equivalent"><span>${t('cigaretteEquivalentShort')}</span><strong>${escapeHtml(cigaretteEquivalent)} ${t('cigaretteEquivalentUnitShort')}</strong></p>
       </article>
     `;
   }).join('');
+}
+
+function renderNews(data) {
+  if (!data || !Array.isArray(data.articles) || data.articles.length < 2 || data.articles.length > 3) {
+    throw new Error('The generated haze news feed has an invalid article list.');
+  }
+  const updatedAt = new Date(data.updatedAt);
+  if (Number.isNaN(updatedAt.valueOf())) throw new Error('The generated haze news feed has an invalid update time.');
+
+  const list = document.getElementById('news-list');
+  const fragment = document.createDocumentFragment();
+  data.articles.forEach((item) => {
+    const expectedHost = NEWS_SOURCE_HOSTS[item.source];
+    const url = new URL(item.url);
+    const publishedAt = new Date(item.publishedAt);
+    if (!expectedHost || url.protocol !== 'https:' || url.hostname !== expectedHost ||
+      !item.title || Number.isNaN(publishedAt.valueOf())) {
+      throw new Error('The generated haze news feed contains an invalid article.');
+    }
+
+    const card = document.createElement('article');
+    card.className = 'news-card';
+    const source = document.createElement('span');
+    source.className = 'news-source';
+    source.textContent = item.source;
+    const time = document.createElement('time');
+    time.dateTime = publishedAt.toISOString();
+    time.textContent = `${new Intl.DateTimeFormat(currentLanguage === 'zh' ? 'zh-SG' : 'en-SG', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Asia/Singapore'
+    }).format(publishedAt)} SGT`;
+    const heading = document.createElement('h3');
+    const titleLink = document.createElement('a');
+    titleLink.href = url.href;
+    titleLink.target = '_blank';
+    titleLink.rel = 'noreferrer';
+    titleLink.textContent = item.title;
+    heading.append(titleLink);
+    const readLink = document.createElement('a');
+    readLink.className = 'news-read-link';
+    readLink.href = url.href;
+    readLink.target = '_blank';
+    readLink.rel = 'noreferrer';
+    readLink.textContent = t('newsRead');
+    card.append(source, time, heading, readLink);
+    fragment.append(card);
+  });
+
+  document.getElementById('news-updated').textContent = t('newsUpdatedAt', {
+    date: new Intl.DateTimeFormat(currentLanguage === 'zh' ? 'zh-SG' : 'en-SG', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Asia/Singapore'
+    }).format(updatedAt)
+  });
+  list.replaceChildren(fragment);
+  latestNewsData = data;
+}
+
+async function fetchLatestNews() {
+  const list = document.getElementById('news-list');
+  try {
+    const response = await fetch(`news.json?refresh=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`News feed request failed (${response.status}).`);
+    renderNews(await response.json());
+  } catch (error) {
+    console.error('Unable to load the generated haze news feed.', error);
+    const message = document.createElement('p');
+    message.className = 'news-status';
+    message.setAttribute('role', 'status');
+    message.textContent = t('newsError');
+    list.replaceChildren(message);
+  }
 }
 
 async function fetchLiveReadings() {
@@ -722,6 +883,10 @@ async function findDestinationPhoto(result, searchTerm) {
 document.querySelectorAll('[data-language]').forEach((button) => {
   button.addEventListener('click', () => applyLanguage(button.dataset.language));
 });
+document.getElementById('mask-region-select').addEventListener('change', (event) => {
+  selectedMaskRegion = event.currentTarget.value;
+  if (currentReadings) updateFamilyMasks();
+});
 document.getElementById('place-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const input = document.getElementById('place-input');
@@ -763,9 +928,42 @@ document.getElementById('place-form').addEventListener('submit', async (event) =
   }
 });
 
+document.getElementById('feedback-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const message = document.getElementById('feedback-message');
+  const button = document.getElementById('feedback-submit');
+  const endpoint = new URL(FEEDBACK_FORM_ENDPOINT);
+  if (endpoint.origin !== 'https://formspree.io' || !/^\/f\/[a-zA-Z0-9]+$/.test(endpoint.pathname) || endpoint.pathname.endsWith('/YOUR_FORM_ID')) {
+    message.textContent = t('feedbackNotConfigured');
+    return;
+  }
+  if (!form.reportValidity()) return;
+
+  message.textContent = '';
+  button.disabled = true;
+  button.textContent = t('feedbackSending');
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(new FormData(form)))
+    });
+    if (!response.ok) throw new Error(t('feedbackSendError'));
+    form.reset();
+    message.textContent = t('feedbackSuccess');
+  } catch (error) {
+    message.textContent = error instanceof Error ? error.message : t('feedbackSendError');
+  } finally {
+    button.disabled = false;
+    button.textContent = t('feedbackSubmit');
+  }
+});
+
 installFaceMasks();
 applyLanguage('en');
 renderVisitorCount(true);
+fetchLatestNews();
 fetchLiveReadings().catch((error) => {
   dataErrorKey = 'dataRefreshError';
   const notice = document.getElementById('data-error');
