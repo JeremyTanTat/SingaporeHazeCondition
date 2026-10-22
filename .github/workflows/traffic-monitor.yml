@@ -1,0 +1,23 @@
+name: Monitor repository traffic
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub Actions uses UTC; these run at 00:00, 06:00, 12:00, and 18:00 SGT.
+    - cron: '0 16,22,4,10 * * *'
+
+permissions:
+  administration: read
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Report repository traffic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/report_github_traffic.py
