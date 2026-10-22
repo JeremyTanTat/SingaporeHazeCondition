@@ -4,11 +4,13 @@ A bilingual static website for Singapore haze readings, regional PM2.5 and PSI, 
 
 ## Live site
 
-https://jeremytantat.github.io/SingaporeHazeCondition/
+https://hazehowliao.com/
 
 ## Deployment
 
-Pushes to `main` deploy the site to GitHub Pages using `.github/workflows/deploy.yml`. The repository's Pages source should be set to **GitHub Actions** under **Settings → Pages**. A scheduled deployment also runs daily at 04:00 UTC (12:00 SGT) to refresh the haze news feed. GitHub may delay scheduled workflows during periods of high load.
+Pushes to `main` deploy the site to GitHub Pages using `.github/workflows/deploy.yml`. The repository's Pages source should be set to **GitHub Actions** under **Settings → Pages**. The root `CNAME` file keeps the custom domain on Actions deployments. A scheduled deployment also runs daily at 07:00 UTC (3:00 PM SGT) to refresh the haze news feed. GitHub may delay scheduled workflows during periods of high load.
+
+The site includes canonical, Open Graph, Twitter, and WebSite structured metadata, plus `robots.txt` and `sitemap.xml` for search-engine discovery. Search engines may take time to crawl and index the custom domain; submit `https://hazehowliao.com/sitemap.xml` in Google Search Console and Bing Webmaster Tools after DNS and HTTPS are working.
 
 ## Feedback form setup
 
