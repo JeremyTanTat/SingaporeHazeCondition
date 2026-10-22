@@ -34,6 +34,11 @@ FEEDS = (
         "https://www.straitstimes.com/news/singapore/rss.xml",
         "www.straitstimes.com",
     ),
+    (
+        "Mothership",
+        "https://mothership.sg/feed/",
+        "mothership.sg",
+    ),
 )
 
 
@@ -50,7 +55,9 @@ def read_feed(source, feed_url, allowed_host):
     for attempt in range(3):
         try:
             with urllib.request.urlopen(request, timeout=30) as response:
-                feed = ET.fromstring(response.read())
+                content = response.read()
+            content = re.sub(rb"&(?!(?:[A-Za-z][A-Za-z0-9]*|#\d+|#x[0-9A-Fa-f]+);)", b"&amp;", content)
+            feed = ET.fromstring(content)
             break
         except (urllib.error.URLError, ET.ParseError, OSError) as error:
             if attempt == 2:
@@ -73,7 +80,10 @@ def read_feed(source, feed_url, allowed_host):
         if not published_text:
             raise RuntimeError(f"The {source} feed returned a haze story without a publication date.")
         try:
-            published = parsedate_to_datetime(published_text)
+            try:
+                published = parsedate_to_datetime(published_text)
+            except (TypeError, ValueError):
+                published = datetime.fromisoformat(published_text)
         except (TypeError, ValueError) as error:
             raise RuntimeError(f"The {source} feed returned an invalid publication date.") from error
         if published is None:
