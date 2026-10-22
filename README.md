@@ -16,7 +16,7 @@ The feedback form uses the Formspree endpoint configured in `FEEDBACK_FORM_ENDPO
 
 ## Haze news
 
-The deployment workflow fetches CNA and The Straits Times RSS feeds, selects up to three recent haze-related stories, and publishes them in `news.json`. `scripts/update_haze_news.py` can also be run locally to refresh the feed. The webpage loads the generated file and displays the publisher, headline, and Singapore-time publication date.
+The deployment workflow fetches CNA, The Straits Times and Mothership RSS feeds (scheduled daily at 3pm SGT), selects up to three recent haze-related stories, and publishes them in `news.json`. `scripts/update_haze_news.py` can also be run locally to refresh the feed. The webpage loads the generated file and displays the publisher, headline, and Singapore-time publication date.
 
 ## Destination photos and sharing
 

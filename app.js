@@ -12,7 +12,8 @@ const REGION_CENTRES = {
 };
 const NEWS_SOURCE_HOSTS = {
   CNA: 'www.channelnewsasia.com',
-  'The Straits Times': 'www.straitstimes.com'
+  'The Straits Times': 'www.straitstimes.com',
+  Mothership: 'mothership.sg'
 };
 const REGION_NAMES = {
   en: { north: 'North', south: 'South', east: 'East', west: 'West', central: 'Central' },
@@ -57,8 +58,8 @@ const COPY = {
     legendSource: 'Official haze guide ↗',
     newsEyebrow: 'FROM THE NEWSROOMS',
     newsTitle: 'Latest haze news',
-    newsSubtitle: 'CNA and The Straits Times · refreshed daily at 12pm SGT',
-    newsUpdatedAt: 'CNA and The Straits Times · refreshed {date} SGT',
+    newsSubtitle: 'CNA, The Straits Times and Mothership · refreshed daily at 3pm SGT',
+    newsUpdatedAt: 'CNA, The Straits Times and Mothership · refreshed {date} SGT',
     newsLoading: 'Fetching the latest haze stories…',
     newsError: 'The latest haze stories could not be loaded. Please try again later.',
     newsRead: 'Read story ↗',
@@ -220,8 +221,8 @@ const COPY = {
     legendSource: '官方雾霾指南 ↗',
     newsEyebrow: '新闻报道',
     newsTitle: '最新雾霾新闻',
-    newsSubtitle: 'CNA 与《海峡时报》· 每天新加坡时间中午 12 点更新',
-    newsUpdatedAt: 'CNA 与《海峡时报》· 更新于 {date}（新加坡时间）',
+    newsSubtitle: 'CNA、《海峡时报》与 Mothership · 每天新加坡时间下午 3 点更新',
+    newsUpdatedAt: 'CNA、《海峡时报》与 Mothership · 更新于 {date}（新加坡时间）',
     newsLoading: '正在获取最新雾霾新闻…',
     newsError: '无法加载最新雾霾新闻，请稍后再试。',
     newsRead: '阅读报道 ↗',
