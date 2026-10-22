@@ -35,7 +35,7 @@ const COPY = {
     twentyFourHourAverage: '24-hour average',
     pmReadingLabel: 'PM2.5',
     psiReadingLabel: 'Pollutant Standards Index',
-    highestReading: 'Highest reading',
+    highestReading: 'Region with highest reading',
     dataNote: 'Readings are from Singapore’s open government real-time API. 1-hour PM2.5 and 24-hour PSI are different measures; use PSI for general health guidance.',
     mapEyebrow: 'FIVE REPORTING REGIONS',
     mapTitle: 'Singapore, by region',
@@ -104,8 +104,9 @@ const COPY = {
     placePlaceholderHint: 'Pick a place to get started',
     familyEyebrow: 'THE HAZE HOW LIAO FAMILY',
     familyTitle: 'Mask up, or can relax?',
-    familySubtitle: 'Choose a region; masks are shown when its 1-hour PM2.5 is above normal.',
+    familySubtitle: 'Defaults to the highest-reading region. Check a Singapore place or choose another region to update the masks.',
     maskRegionLabel: 'Region for mask check',
+    maskLoading: 'Waiting for live readings to determine mask status…',
     photo1Title: 'Park day, planned.',
     photo1Text: 'Better to check before heading out.',
     photoTag1: '01 / OUT & ABOUT',
@@ -197,7 +198,7 @@ const COPY = {
     twentyFourHourAverage: '24 小时平均值',
     pmReadingLabel: 'PM2.5 细颗粒物',
     psiReadingLabel: '污染标准指数',
-    highestReading: '最高读数',
+    highestReading: '读数最高的区域',
     dataNote: '数据来自新加坡政府实时开放数据 API。1 小时 PM2.5 与 24 小时 PSI 是不同指标；一般健康建议请参考 PSI。',
     mapEyebrow: '五个监测区域',
     mapTitle: '新加坡区域空气状况',
@@ -266,8 +267,9 @@ const COPY = {
     placePlaceholderHint: '输入地点开始查询',
     familyEyebrow: 'Haze How Liao 一家',
     familyTitle: '要戴口罩，还是可以放松？',
-    familySubtitle: '选择一个区域；该区域 1 小时 PM2.5 高于正常范围时，照片会显示口罩。',
+    familySubtitle: '默认采用读数最高的区域。查询新加坡地点或选择其他区域即可更新照片中的口罩。',
     maskRegionLabel: '口罩检查区域',
+    maskLoading: '正在等待实时读数以确定口罩状态…',
     photo1Title: '公园出游，先看空气。',
     photo1Text: '出门前查看最新情况。',
     photoTag1: '01 / 户外时光',
@@ -383,7 +385,8 @@ let selectedPlacePhotoStatus = 'none';
 let placePhotoRequest = 0;
 let dataErrorKey = null;
 let latestNewsData = null;
-let selectedMaskRegion = 'central';
+let selectedMaskRegion = null;
+let maskRegionMode = 'highest';
 
 function t(key, replacements = {}) {
   let value = COPY[currentLanguage][key] || COPY.en[key] || key;
@@ -516,6 +519,12 @@ function renderDashboard() {
   const { regions, timestamp } = currentReadings;
   const highestPm = regions.reduce((highest, item) => item.pm > highest.pm ? item : highest);
   const highestPsi = regions.reduce((highest, item) => item.psi > highest.psi ? item : highest);
+  if (maskRegionMode === 'highest') {
+    selectedMaskRegion = highestPm.name;
+  } else if (maskRegionMode === 'place' && selectedPlace) {
+    selectedMaskRegion = closestRegion(Number(selectedPlace.LATITUDE), Number(selectedPlace.LONGITUDE));
+  }
+  document.getElementById('mask-region-select').value = selectedMaskRegion;
 
   document.getElementById('national-pm').textContent = highestPm.pm;
   document.getElementById('pm-location').textContent = regionName(highestPm.name);
@@ -753,7 +762,7 @@ function renderVisitorCount(increment) {
 }
 
 function updateShareLink() {
-  const shareUrl = window.location.href.split('#')[0];
+  const shareUrl = document.querySelector('link[rel="canonical"]').href;
   const message = `${t('shareMessage')} ${shareUrl}`;
   document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodeURIComponent(message)}`;
 }
@@ -767,6 +776,10 @@ function showPlaceResult(result, searchTerm) {
     throw new Error(t('placeOutside'));
   }
   selectedPlace = result;
+  maskRegionMode = 'place';
+  selectedMaskRegion = closestRegion(latitude, longitude);
+  document.getElementById('mask-region-select').value = selectedMaskRegion;
+  updateFamilyMasks();
   selectedPlacePhoto = null;
   selectedPlacePhotoStatus = 'searching';
   const requestId = ++placePhotoRequest;
@@ -885,6 +898,7 @@ document.querySelectorAll('[data-language]').forEach((button) => {
 });
 document.getElementById('mask-region-select').addEventListener('change', (event) => {
   selectedMaskRegion = event.currentTarget.value;
+  maskRegionMode = 'manual';
   if (currentReadings) updateFamilyMasks();
 });
 document.getElementById('place-form').addEventListener('submit', async (event) => {

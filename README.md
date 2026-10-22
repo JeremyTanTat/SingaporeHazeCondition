@@ -1,6 +1,6 @@
 # Haze How Liao?
 
-A bilingual static website for Singapore haze readings, regional PM2.5 and PSI, local activity guidance, and haze-aware destination photos.
+A bilingual static website for Singapore haze readings, regional PM2.5 and PSI, local activity guidance, haze-aware destination photos, and family photo masks that default to the highest-reading region and follow a checked place or manually selected region.
 
 ## Live site
 
@@ -20,7 +20,7 @@ The deployment workflow fetches CNA and The Straits Times RSS feeds, selects up 
 
 ## Destination photos and sharing
 
-Destination photo lookup uses the searched place's approximate coordinates to find nearby images on Wikimedia Commons. When an image is shown, its source, photographer and license are linked in the result; nearby images may not depict the exact address. The Open Graph and Twitter share cards use [`social-preview.png`](./social-preview.png).
+Destination photo lookup uses the searched place's approximate coordinates to find nearby images on Wikimedia Commons. When an image is shown, its source, photographer and license are linked in the result; nearby images may not depict the exact address. Open Graph, Twitter and WhatsApp link previews use [`social-preview.png`](./social-preview.png); WhatsApp shares the canonical site URL.
 
 ## Cigarette-equivalent estimate
 

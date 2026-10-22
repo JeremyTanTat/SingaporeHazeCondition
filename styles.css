@@ -72,6 +72,7 @@ h1 { margin-bottom: 17px; max-width: 580px; font-size: clamp(42px, 6vw, 68px); f
 h2 { margin-bottom: 0; font-size: clamp(27px, 3.4vw, 36px); font-weight: 700; line-height: 1.2; }
 .source-tag { border: 1px solid #e0e2d7; padding: 8px 11px; border-radius: 50px; color: #67776b; background: rgba(255,255,255,.5); font-size: 9px; font-weight: 700; letter-spacing: .09em; white-space: nowrap; }
 .source-dot { width: 6px; height: 6px; margin-right: 5px; }
+.reading-section-title { margin: 0 0 12px; color: #34483b; font-size: 20px; font-weight: 700; line-height: 1.2; }
 .headline-readings { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .reading-card { position: relative; min-height: 204px; padding: 22px 24px 19px; border: 1px solid rgba(42, 60, 46, .06); border-radius: 16px; background: var(--white); box-shadow: var(--shadow); }
 .reading-top { display: flex; align-items: center; gap: 10px; }
@@ -79,7 +80,7 @@ h2 { margin-bottom: 0; font-size: clamp(27px, 3.4vw, 36px); font-weight: 700; li
 .pm-icon { color: #895b36; background: #f7e7d6; }
 .psi-icon { color: #3f7155; background: #e5eee1; }
 .reading-period { color: #8b938d; font-size: 10px; }
-.reading-label { margin: 16px 0 3px; color: #67726a; font-size: 12px; }
+.reading-label { margin: 10px 0 3px; color: #67726a; font-size: 12px; }
 .reading-value-row { display: flex; align-items: baseline; gap: 8px; }
 .reading-value-row strong { font-family: 'Manrope', sans-serif; font-size: 39px; line-height: 1.1; letter-spacing: -.06em; }
 .reading-value-row > span { color: #758078; font-size: 11px; }
@@ -270,7 +271,7 @@ body.masks-on .mask-overlay { opacity: 1; }
   .section-heading { align-items: start; }
   .source-tag { margin-top: 3px; font-size: 8px; }
   .headline-readings { grid-template-columns: 1fr; gap: 10px; }
-  .reading-card { min-height: 190px; padding: 19px; }
+  .reading-card { min-height: 200px; padding: 19px; }
   .place-section { padding: 43px 0; }
   .place-layout { grid-template-columns: 1fr; gap: 20px; }
   .place-copy > p:not(.eyebrow) { margin-bottom: 20px; }

@@ -20,6 +20,7 @@
   <meta name="twitter:title" content="Haze How Liao? — Singapore Haze Check">
   <meta name="twitter:description" content="Check live Singapore PM2.5 and PSI readings, regional air quality and haze guidance before heading out.">
   <meta name="twitter:image" content="https://jeremytantat.github.io/SingaporeHazeCondition/social-preview.png">
+  <link rel="canonical" href="https://jeremytantat.github.io/SingaporeHazeCondition/">
   <title>Haze How Liao?</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='20' fill='%23294d3a'/%3E%3Ctext x='13' y='45' font-family='Arial,sans-serif' font-size='40' font-weight='700' fill='%23f6f1de'%3Eh.%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://api-open.data.gov.sg">
@@ -119,6 +120,7 @@
     </section>
 
     <section class="readings-section shell" aria-label="Highest readings">
+      <h2 class="reading-section-title" data-i18n="highestReading">Region with highest reading</h2>
       <div class="headline-readings">
         <article class="reading-card pm-card">
           <div class="reading-top">
@@ -127,7 +129,7 @@
           </div>
           <p class="reading-label" data-i18n="pmReadingLabel">PM2.5</p>
           <div class="reading-value-row"><strong id="national-pm">—</strong><span>µg/m³</span></div>
-          <p class="reading-foot"><span data-i18n="highestReading">Highest reading</span> · <span id="pm-location">Waiting for data</span></p>
+          <p class="reading-foot"><span id="pm-location">Waiting for data</span></p>
           <div class="scale-track"><span id="pm-scale"></span></div>
           <p class="reading-status" id="pm-status">Loading condition…</p>
         </article>
@@ -138,7 +140,7 @@
           </div>
           <p class="reading-label" data-i18n="psiReadingLabel">Pollutant Standards Index</p>
           <div class="reading-value-row"><strong id="national-psi">—</strong><span>PSI</span></div>
-          <p class="reading-foot"><span data-i18n="highestReading">Highest reading</span> · <span id="psi-location">Waiting for data</span></p>
+          <p class="reading-foot"><span id="psi-location">Waiting for data</span></p>
           <div class="scale-track"><span id="psi-scale"></span></div>
           <p class="reading-status" id="psi-status">Loading condition…</p>
         </article>
@@ -174,25 +176,12 @@
       </div>
     </section>
 
-    <section class="news-section shell" aria-labelledby="news-title">
-      <div class="section-heading news-heading">
-        <div>
-          <p class="eyebrow" data-i18n="newsEyebrow">FROM THE NEWSROOMS</p>
-          <h2 id="news-title" data-i18n="newsTitle">Latest haze news</h2>
-          <p class="section-subtitle" id="news-updated" data-i18n="newsSubtitle">CNA and The Straits Times · refreshed daily at 12pm SGT</p>
-        </div>
-      </div>
-      <div class="news-grid" id="news-list" aria-live="polite">
-        <p class="region-skeleton" data-i18n="newsLoading">Fetching the latest haze stories…</p>
-      </div>
-    </section>
-
     <section class="mask-section shell">
       <div class="section-heading mask-heading">
         <div>
           <p class="eyebrow" data-i18n="familyEyebrow">THE HAZE HOW LIAO FAMILY</p>
           <h2 data-i18n="familyTitle">Mask up, or can relax?</h2>
-          <p class="section-subtitle" data-i18n="familySubtitle">Choose a region; masks are shown when its 1-hour PM2.5 is above normal.</p>
+          <p class="section-subtitle" data-i18n="familySubtitle">Defaults to the highest-reading region. Check a Singapore place or choose another region to update the masks.</p>
         </div>
         <div class="mask-controls">
           <label class="mask-region-control" for="mask-region-select">
@@ -205,7 +194,7 @@
               <option value="central" selected>Central</option>
             </select>
           </label>
-          <div class="mask-legend"><span class="mask-swatch"></span><span id="mask-summary" role="status" aria-live="polite">Choose a region to see the mask guidance.</span></div>
+          <div class="mask-legend"><span class="mask-swatch"></span><span id="mask-summary" data-i18n="maskLoading" role="status" aria-live="polite">Waiting for live readings to determine mask status…</span></div>
         </div>
       </div>
       <div class="photo-grid">
@@ -243,6 +232,19 @@
         </figure>
       </div>
       <p class="photo-disclaimer" data-i18n="photoDisclaimer">Illustrative mask overlays only — not a medical assessment or a substitute for a properly fitted respirator. Photos are shown as supplied.</p>
+    </section>
+
+    <section class="news-section shell" aria-labelledby="news-title">
+      <div class="section-heading news-heading">
+        <div>
+          <p class="eyebrow" data-i18n="newsEyebrow">FROM THE NEWSROOMS</p>
+          <h2 id="news-title" data-i18n="newsTitle">Latest haze news</h2>
+          <p class="section-subtitle" id="news-updated" data-i18n="newsSubtitle">CNA and The Straits Times · refreshed daily at 12pm SGT</p>
+        </div>
+      </div>
+      <div class="news-grid" id="news-list" aria-live="polite">
+        <p class="region-skeleton" data-i18n="newsLoading">Fetching the latest haze stories…</p>
+      </div>
     </section>
 
     <section class="food-section">
