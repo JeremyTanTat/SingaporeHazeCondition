@@ -762,7 +762,7 @@ function renderVisitorCount() {
 
 async function fetchVisitorCount() {
   try {
-    const response = await fetch(`${GOATCOUNTER_BASE}/counter/TOTAL.json`, { cache: 'no-store' });
+    const response = await fetch(`${GOATCOUNTER_BASE}/counter/TOTAL.json?end=2099-12-31`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`GoatCounter returned HTTP ${response.status}.`);
     const payload = await response.json();
     const count = typeof payload.count === 'string' ? Number(payload.count.replace(/,/g, '')) : Number.NaN;
