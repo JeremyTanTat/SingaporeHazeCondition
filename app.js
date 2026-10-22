@@ -2,6 +2,7 @@ const DATA_BASE = 'https://api-open.data.gov.sg/v2/real-time/api';
 const ONEMAP_SEARCH = 'https://www.onemap.gov.sg/api/common/elastic/search';
 const COMMONS_API = 'https://commons.wikimedia.org/w/api.php';
 const FEEDBACK_FORM_ENDPOINT = 'https://formspree.io/f/xgaogzjk';
+const GOATCOUNTER_BASE = 'https://jeremytantat.goatcounter.com';
 const REGIONS = ['north', 'south', 'east', 'west', 'central'];
 const REGION_CENTRES = {
   north: { latitude: 1.41803, longitude: 103.82 },
@@ -144,9 +145,9 @@ const COPY = {
     footerTagline: 'Made for checking the air, not worrying about it.',
     footerOfficial: 'Official NEA haze information ↗',
     footerNote: 'Data refreshes automatically. For health advisories and the latest official guidance, always refer to NEA.',
-    visitorLabel: 'Page visits on this device',
+    visitorLabel: 'Total site visits',
     visitorUnavailable: 'Unavailable',
-    visitorUnavailableDetail: 'The browser could not save this device’s visit count.',
+    visitorUnavailableDetail: 'Enable “Allow using the visitor counter” in GoatCounter site settings to show the total.',
     shareWhatsApp: 'Share on WhatsApp',
     shareWhatsAppLabel: 'Share Haze How Liao? on WhatsApp',
     shareMessage: 'Check the latest Singapore haze readings on Haze How Liao?:',
@@ -307,9 +308,9 @@ const COPY = {
     footerTagline: '查看空气状况，安心安排出行。',
     footerOfficial: 'NEA 官方雾霾资讯 ↗',
     footerNote: '数据会自动更新。健康建议及最新官方资讯请以 NEA 为准。',
-    visitorLabel: '本设备的页面访问次数',
+    visitorLabel: '网站总访问次数',
     visitorUnavailable: '无法读取',
-    visitorUnavailableDetail: '浏览器无法保存本设备的访问次数。',
+    visitorUnavailableDetail: '请在 GoatCounter 网站设置中启用“Allow using the visitor counter”以显示总访问次数。',
     shareWhatsApp: '通过 WhatsApp 分享',
     shareWhatsAppLabel: '通过 WhatsApp 分享 Haze How Liao?',
     shareMessage: '查看新加坡最新雾霾读数：',
@@ -379,6 +380,8 @@ const FACE_LANDMARKS = {
 };
 
 let currentLanguage = 'en';
+let visitorCount = null;
+let visitorCountUnavailable = false;
 let currentReadings = null;
 let selectedPlace = null;
 let selectedPlacePhoto = null;
@@ -430,7 +433,7 @@ function applyLanguage(language) {
   document.getElementById('data-error').textContent = dataErrorKey ? t(dataErrorKey) : '';
   if (currentReadings) renderDashboard();
   if (selectedPlace) renderPlaceResult(selectedPlace);
-  renderVisitorCount(false);
+  renderVisitorCount();
   updateShareLink();
   if (latestNewsData) renderNews(latestNewsData);
 }
@@ -744,21 +747,34 @@ function renderPlaceResult(result) {
   }
 }
 
-function renderVisitorCount(increment) {
+function renderVisitorCount() {
   const counter = document.getElementById('visit-count');
-  try {
-    const savedCount = window.localStorage.getItem('haze-how-liao-page-visits');
-    const previousCount = savedCount === null ? 0 : Number(savedCount);
-    if (!Number.isSafeInteger(previousCount) || previousCount < 0) {
-      throw new Error('The saved visit count is not a valid non-negative integer.');
-    }
-    const count = previousCount + (increment ? 1 : 0);
-    if (increment) window.localStorage.setItem('haze-how-liao-page-visits', String(count));
-    counter.textContent = new Intl.NumberFormat(currentLanguage === 'zh' ? 'zh-SG' : 'en-SG').format(count);
-    counter.title = t('visitorLabel');
-  } catch (error) {
+  counter.title = t('visitorLabel');
+  if (visitorCount !== null) {
+    counter.textContent = new Intl.NumberFormat(currentLanguage === 'zh' ? 'zh-SG' : 'en-SG').format(visitorCount);
+  } else if (visitorCountUnavailable) {
     counter.textContent = t('visitorUnavailable');
-    counter.title = error instanceof Error ? error.message : t('visitorUnavailableDetail');
+    counter.title = t('visitorUnavailableDetail');
+  } else {
+    counter.textContent = '—';
+  }
+}
+
+async function fetchVisitorCount() {
+  try {
+    const response = await fetch(`${GOATCOUNTER_BASE}/counter/TOTAL.json`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`GoatCounter returned HTTP ${response.status}.`);
+    const payload = await response.json();
+    const count = typeof payload.count === 'string' ? Number(payload.count.replace(/,/g, '')) : Number.NaN;
+    if (!Number.isSafeInteger(count) || count < 0) {
+      throw new Error('GoatCounter returned an invalid site visit total.');
+    }
+    visitorCount = count;
+    renderVisitorCount();
+  } catch (error) {
+    visitorCountUnavailable = true;
+    renderVisitorCount();
+    console.error('Could not load the shared GoatCounter site visit total.', error);
   }
 }
 
@@ -977,7 +993,7 @@ document.getElementById('feedback-form').addEventListener('submit', async (event
 
 installFaceMasks();
 applyLanguage('en');
-renderVisitorCount(true);
+fetchVisitorCount();
 fetchLatestNews();
 fetchLiveReadings().catch((error) => {
   dataErrorKey = 'dataRefreshError';

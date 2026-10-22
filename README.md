@@ -20,6 +20,10 @@ The feedback form uses the Formspree endpoint configured in `FEEDBACK_FORM_ENDPO
 
 The deployment workflow fetches CNA, The Straits Times and Mothership RSS feeds (scheduled daily at 3pm SGT), selects up to three recent haze-related stories, and publishes them in `news.json`. `scripts/update_haze_news.py` can also be run locally to refresh the feed. The webpage loads the generated file and displays the publisher, headline, and Singapore-time publication date.
 
+## Website visit count
+
+GoatCounter tracks page views across all visitors, and the footer displays the site's cumulative page-view total. The GoatCounter site setting **Allow using the visitor counter** must be enabled for the public total endpoint; its count endpoint may cache results for up to four hours. This is website traffic, separate from GitHub repository traffic.
+
 ## Destination photos and sharing
 
 Destination photo lookup uses the searched place's approximate coordinates to find nearby images on Wikimedia Commons. When an image is shown, its source, photographer and license are linked in the result; nearby images may not depict the exact address. Open Graph, Twitter and WhatsApp link previews use [`social-preview.png`](./social-preview.png); WhatsApp shares the canonical site URL.
