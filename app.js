@@ -148,8 +148,13 @@ const COPY = {
     visitorLabel: 'Total site visits',
     visitorUnavailable: 'Unavailable',
     visitorUnavailableDetail: 'Enable “Allow using the visitor counter” in GoatCounter site settings to show the total.',
-    shareWhatsApp: 'Share on WhatsApp',
-    shareWhatsAppLabel: 'Share Haze How Liao? on WhatsApp',
+    shareLabel: 'Share Haze How Liao?',
+    shareWhatsApp: 'WhatsApp',
+    shareFacebook: 'Facebook',
+    shareTelegram: 'Telegram',
+    shareCopyLink: 'Copy link',
+    shareCopied: 'Link copied.',
+    shareCopyError: 'Could not copy the link. Please try again.',
     shareMessage: 'Check the latest Singapore haze readings on Haze How Liao?:',
     normal: 'Normal range',
     pmElevated: 'Elevated — take care outdoors',
@@ -311,8 +316,13 @@ const COPY = {
     visitorLabel: '网站总访问次数',
     visitorUnavailable: '无法读取',
     visitorUnavailableDetail: '请在 GoatCounter 网站设置中启用“Allow using the visitor counter”以显示总访问次数。',
-    shareWhatsApp: '通过 WhatsApp 分享',
-    shareWhatsAppLabel: '通过 WhatsApp 分享 Haze How Liao?',
+    shareLabel: '分享 Haze How Liao?',
+    shareWhatsApp: 'WhatsApp',
+    shareFacebook: 'Facebook',
+    shareTelegram: 'Telegram',
+    shareCopyLink: '复制链接',
+    shareCopied: '链接已复制。',
+    shareCopyError: '无法复制链接，请重试。',
     shareMessage: '查看新加坡最新雾霾读数：',
     normal: '正常范围',
     pmElevated: '有所升高 — 户外请注意',
@@ -781,7 +791,54 @@ async function fetchVisitorCount() {
 function updateShareLink() {
   const shareUrl = document.querySelector('link[rel="canonical"]').href;
   const message = `${t('shareMessage')} ${shareUrl}`;
-  document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  document.querySelector('[data-share-service="whatsapp"]').href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  document.querySelector('[data-share-service="facebook"]').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+  document.querySelector('[data-share-service="telegram"]').href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(t('shareMessage'))}`;
+}
+
+function initializeShareMenu() {
+  const control = document.getElementById('share-control');
+  const toggle = document.getElementById('share-toggle');
+  const menu = document.getElementById('share-menu');
+  const status = document.getElementById('share-status');
+  toggle.querySelector('svg path').setAttribute(
+    'd',
+    'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.3 3.3 0 0 0 0-1.39l7.05-4.11A3 3 0 1 0 15 5c0 .23.03.46.08.68L8.03 9.79a3 3 0 1 0 0 4.42l7.12 4.16a3 3 0 1 0 2.85-2.29Z'
+  );
+
+  function closeMenu() {
+    menu.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    status.textContent = '';
+  }
+
+  toggle.addEventListener('click', () => {
+    menu.hidden = !menu.hidden;
+    toggle.setAttribute('aria-expanded', String(!menu.hidden));
+    if (menu.hidden) status.textContent = '';
+  });
+  menu.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', closeMenu);
+  });
+  document.getElementById('copy-share-link').addEventListener('click', async () => {
+    try {
+      const shareUrl = document.querySelector('link[rel="canonical"]').href;
+      await navigator.clipboard.writeText(shareUrl);
+      status.textContent = t('shareCopied');
+    } catch (error) {
+      status.textContent = t('shareCopyError');
+      console.error('Could not copy the site link to the clipboard.', error);
+    }
+  });
+  document.addEventListener('click', (event) => {
+    if (!control.contains(event.target)) closeMenu();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !menu.hidden) {
+      closeMenu();
+      toggle.focus();
+    }
+  });
 }
 
 function showPlaceResult(result, searchTerm) {
@@ -913,6 +970,7 @@ async function findDestinationPhoto(result, searchTerm) {
 document.querySelectorAll('[data-language]').forEach((button) => {
   button.addEventListener('click', () => applyLanguage(button.dataset.language));
 });
+initializeShareMenu();
 document.getElementById('mask-region-select').addEventListener('change', (event) => {
   selectedMaskRegion = event.currentTarget.value;
   maskRegionMode = 'manual';
